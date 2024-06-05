@@ -1,0 +1,10 @@
+name: "[Internal use] Continuous integration for project validation"
+on:
+  push:
+    branches:
+      - "rubric*"
+      - main
+
+jobs:
+  call-reusable-ci:
+    uses: betrybe/python-ci/.github/workflows/ci.yml@main
