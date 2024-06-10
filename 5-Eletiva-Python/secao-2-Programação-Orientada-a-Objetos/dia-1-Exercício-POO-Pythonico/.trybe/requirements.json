@@ -1,0 +1,36 @@
+{
+  "requirements": [
+    {
+      "bonus": false,
+      "description": "1-Desenvolver um sistema de gerenciamento de estoque de uma loja virtual",
+      "enabled": true,
+      "identifier": "test_produto_final",
+      "order": 1,
+      "skill_ids": []
+    },
+    {
+      "bonus": false,
+      "description": "2-Desenvolver um sistema de gerenciamento de estoque de uma loja virtual, parte 2",
+      "enabled": true,
+      "identifier": "test_estoque_final",
+      "order": 2,
+      "skill_ids": []
+    },
+    {
+      "bonus": false,
+      "description": "3-Testar o construtor/inicializador do objeto Livro",
+      "enabled": true,
+      "identifier": "test_cria_livro[Livro]",
+      "order": 3,
+      "skill_ids": []
+    },
+    {
+      "bonus": false,
+      "description": "4-Testar a descrição do Livro",
+      "enabled": true,
+      "identifier": "test_descricao_livro[Livro]",
+      "order": 4,
+      "skill_ids": []
+    }
+  ]
+}
