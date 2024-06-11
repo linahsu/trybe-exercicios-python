@@ -40,7 +40,9 @@ if __name__ == "__main__":
     dvd = DVD("HITCHCOCK", 39.99, "Sacha Gervasi")
 
     print(
-        "Descrição do produto: ", produto.get_description(), produto.get_price()
+        "Descrição do produto: ",
+        produto.get_description(),
+        produto.get_price(),  # noqa E501
     )  # noqa E501
     print("Descrição do livro: ", book.get_description(), book.get_price())
     print("Descrição do dvd: ", dvd.get_description(), dvd.get_price())
