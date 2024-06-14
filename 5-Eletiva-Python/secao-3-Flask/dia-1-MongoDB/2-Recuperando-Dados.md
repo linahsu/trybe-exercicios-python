@@ -1,45 +1,6 @@
-## Utilizando MongoDB com Docker
-
-#### Utilizando imagem Docker MongoDB a qual irá inicializar um servidor MongoDB
-
-##### docker run --name mongodb_v6 -d -p 27017:27017 mongo:6.0
-
-O comando acima inicializa um container chamado mongodb_v6, com a imagem do MongoDB em sua versão 6 e vincula a porta 27017 do seu computador local com a mesma porta do container.
-
-#### Executando o shell do MongoDB no Docker
-
-Para manipular os banco de dados, coleções e documentos no MongoDB, utilizaremos uma ferramenta de linha de comando chamada mongosh (Mongo Shell).
-
-Para termos acesso a um shell com o mongosh no container Docker que acabamos de iniciar, vamos executar o comando a seguir:
-
-##### docker exec -it mongodb_v6 mongosh
-
-#### Importando uma base de dados para o MongoDB
-
-Para realizar a cópia de um arquivo do computador local para o container, podemos usar o comando docker cp. Então, após realizar o download do arquivo JSON, em uma nova aba ou janela do terminal, vá até o diretório onde foi salvo o arquivo JSON após o download e execute o seguinte comando:
-
-##### docker cp trybnb.json mongodb_v6:/tmp/trybnb.json
-
-Bacana, agora temos o arquivo JSON no container! Podemos então realizar o procedimento de carregar o arquivo JSON para o MongoDB. Logo, vamos utilizar uma ferramenta chamada mongoimport.
-
-A ferramenta mongoimport importa conteúdo de um arquivo .JSON, .CSV ou .TSV criados pela ferramenta utilitária mongoexport.
-
-Vamos utilizar o comando docker exec para executar o comando mongoimport dentro do container a partir do nosso computador local. 
-Agora podemos realizar a importação do arquivo JSON executando o comando a seguir:
-
-##### docker exec mongodb_v6 mongoimport -d trybnb -c places --file /tmp/trybnb.json --jsonArray
-
-Nesse ponto, já podemos manipular os documentos importados através do mongosh. Execute os seguinte comandos para listar os documentos cadastrados:
-
-##### use trybnb
-##### db.places.find()
-
-- Na primeira linha, usamos o comando use trybnb, para dizer ao mongosh se conectar ao banco de dados trybnb;
-- Na segunda linha, usamos o comando db.places.find(), para listar todos os documentos presentes na coleção places.
-
 ## Recuperando Dados
 
-#### Realizando uma busca por todos os documentos
+### Realizando uma busca por todos os documentos
 
 Antes de tudo, entraremos no terminal do mongosh e vamos nos conectar ao banco de dados trybnb executando o seguinte comando:
 
@@ -53,13 +14,13 @@ A primeira pergunta que podemos realizar ao MongoDB sobre os dados do banco tryb
 
 Em um banco de dados relacional, o correspondente do método db.places.find() seria o SELECT * FROM places.
 
-#### Realizando a contagem de documentos
+### Realizando a contagem de documentos
 
 ##### db.places.countDocuments()
 
 O método countDocuments() realiza a contagem de documentos de uma determinada coleção (no nosso caso, da coleção places). Após sua execução, será exibido o valor 12 que é a quantidade de documentos cadastrados na coleção.
 
-#### Recuperando documentos baseado em um critério
+### Recuperando documentos baseado em um critério
 
 Também é possível recuperar documentos baseado em algum critério de seleção, similar à cláusula WHERE dos banco de dados relacionais.
 
@@ -70,7 +31,7 @@ Não foi comentado antes, mas o método find() pode receber dois parâmetros:
 
 Ambos os parâmetros são opcionais e, quando não informados, o método find() realiza a busca de todos os documentos (como mostrado anteriormente).
 
-#### Parâmetro query
+### Parâmetro query
 
 Suponha que queremos saber qual imóvel tem o _id igual a 7 (uma pergunta a ser respondida pelo banco de dados). Podemos obter essa resposta adicionando o parâmetro query ao método find() da seguinte forma:
 
@@ -92,7 +53,7 @@ Basicamente, basta escrevermos a consulta do mesmo modo que já fizemos e adicio
 
 ##### db.places.find({ 'address.country_code': 'BR' }).count()
 
-#### Parâmetro projection
+### Parâmetro projection
 
 O parâmetro projection permite especificar quais campos devem ou não ser retornados em uma consulta utilizando o método find().
 
@@ -122,7 +83,7 @@ Por exemplo, se escrevermos o seguinte comando no mongosh:
 
 Quando a projeção contêm campos cujos valores são iguais a false, temos uma projeção de exclusão, ou seja, na resposta são exibidos todos os campos exceto os campos definidos na projeção.
 
-#### Ordenando uma resposta
+### Ordenando uma resposta
 
 Caso você deseje que esses dados retornem ordenados baseados no valor de uma chave, podemos utilizar o método sort(). Observe o exemplo abaixo:
 
