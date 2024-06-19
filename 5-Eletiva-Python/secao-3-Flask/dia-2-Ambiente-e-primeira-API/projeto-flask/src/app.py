@@ -1,5 +1,7 @@
 from flask import Flask, jsonify
 import random
+from os import environ
+from waitress import serve
 
 app = Flask(__name__)
 
@@ -14,7 +16,12 @@ def joke():
   return jsonify({ "joke": random.choice(joke_list) })
 
 def start_server(host: str = "0.0.0.0", port: int = 8000):
-  app.run(debug=True, host=host, port=port)
+  if environ.get("FLASK_ENV") == "dev":
+    # Servidor de desenvolvimento do Kit Werkzeug
+    app.run(debug=True, host=host, port=port)
+  else:
+    # Este é o waitress, otimizado para produção
+    serve(app, host=host, port=port)
 
 if __name__ == "__main__":
   start_server()
