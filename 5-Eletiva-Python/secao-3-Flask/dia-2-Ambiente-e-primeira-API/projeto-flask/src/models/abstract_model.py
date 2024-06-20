@@ -36,6 +36,6 @@ class AbstractModel:
     return [cls(d) for d in data]
   
   @classmethod
-  def find_one(cls, query: dct = {}):
+  def find_one(cls, query: dict = {}):
     data = cls._collection.find_one(query)
     return cls(data) if data else None
