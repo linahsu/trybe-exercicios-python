@@ -16,21 +16,21 @@ def _get_music(id: str):
 @musics_controller.route("/", methods=["GET"])
 def all_musics():
   musics_list = _get_all_musics()
-  return jsonify(musics_list), HTTP.OK
+  return jsonify(musics_list), HTTP.OK.value
 
 
 @musics_controller.route("/random", methods=["GET"])
 def random_music():
   music = MusicModel.get_random()
 
-  if music in None:
-    return jsonify({ "error": "No musics available" }), HTTP.NO_CONTENT
+  if music is None:
+    return jsonify({ "error": "No musics available" }), HTTP.NO_CONTENT.value
   
-  return jsonify(music.to_dict()), HTTP.OK
+  return jsonify(music.to_dict()), HTTP.OK.value
 
 
 @musics_controller.route("/", methods=["POST"])
 def post_music():
   new_music = MusicModel(request.json)
   new_music.save()
-  return jsonify(new_music.to_dict()), HTTP.CREATED
+  return jsonify(new_music.to_dict()), HTTP.CREATED.value
