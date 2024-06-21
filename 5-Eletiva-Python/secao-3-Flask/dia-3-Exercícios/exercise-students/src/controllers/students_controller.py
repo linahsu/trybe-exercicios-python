@@ -28,9 +28,13 @@ def add_student():
 
 @bp.route("/alunos/editar/<int:index>", methods=["GET", "POST"])
 def update_student(index):
+  student = StudentsList.find_one_student({ "register": int(index) })
   if request.method == "POST":
-    student = StudentsList.find_one_student({ "register": str(index) })
-    StudentsList.update_student(student)
+    name = request.form.get("name")
+    register = request.form.get("register")
+    student_to_update = { "name": name, "register": int(register) }
+    StudentsList.update_student({ "register": int(index) }, student_to_update)
+
     return redirect('/')
   
   return render_template('update_student.html', student=student, student_index=index)

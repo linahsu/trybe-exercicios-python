@@ -16,8 +16,8 @@
       <td>{{ student.name }}</td>
       <td>{{ student.register }}</td>
       <td>
-        <a href="/alunos/editar/{{ loop.index0 }}">Editar</a>
-        <a href="/alunos/excluir/{{ loop.index0 }}">Excluir</a>
+        <a href="/alunos/editar/{{ student.register }}">Editar</a>
+        <a href="/alunos/excluir/{{ student.register }}">Excluir</a>
       </td>
     </tr>
     {% endfor %}

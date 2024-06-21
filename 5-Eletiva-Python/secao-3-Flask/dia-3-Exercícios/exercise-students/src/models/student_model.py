@@ -35,8 +35,11 @@ class StudentsList:
     cls._collection.insert_one(student)
 
   @classmethod
-  def update_student(cls, student: StoredStudent):
-    cls._collection.update({ "$set": student })
+  def update_student(cls, query, student: dict):
+    cls._collection.find_one_and_update(
+      query,
+      { "$set": student }
+    )
 
   @classmethod
   def remove_student(cls, id: str):
