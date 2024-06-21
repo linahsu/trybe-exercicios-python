@@ -3,6 +3,7 @@ from models.student_model import Student, StoredStudent, StudentsList
 
 bp = Blueprint("students", __name__)
 
+
 @bp.route("/")
 @bp.route("/alunos")
 def get_all_students():
@@ -38,6 +39,7 @@ def update_student(index):
     return redirect('/')
   
   return render_template('update_student.html', student=student, student_index=index)
+
 
 @bp.route("/alunos/excluir/<int:index>", methods=["GET", "POST"])
 def remove_student(index):
