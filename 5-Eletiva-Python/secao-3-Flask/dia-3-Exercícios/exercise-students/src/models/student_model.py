@@ -27,19 +27,16 @@ class StudentsList:
   
   @classmethod
   def find_one_student(cls, query = {}):
-    student = asdict(cls._collection.find_one(query))
+    student = cls._collection.find_one(query)
     return student if student else None
 
   @classmethod
-  def add_student(cls, student: Student):
-    cls._collection.insert_one(student.to_dict())
+  def add_student(cls, student: dict):
+    cls._collection.insert_one(student)
 
   @classmethod
   def update_student(cls, student: StoredStudent):
-    cls._collection.find_one_and_update(
-      { "_id": student["_id"] },
-      { "$set": student },
-    )
+    cls._collection.update({ "$set": student })
 
   @classmethod
   def remove_student(cls, id: str):

@@ -16,7 +16,7 @@ def add_student():
     name = request.form.get('name')
     register = request.form.get('register')
 
-    students.append({
+    StudentsList.add_student({
         "name": name,
         "register": int(register)
     })
@@ -29,16 +29,16 @@ def add_student():
 @bp.route("/alunos/editar/<int:index>", methods=["GET", "POST"])
 def update_student(index):
   if request.method == "POST":
-    students[index]["name"] = request.form.get('name')
-    students[index]["register"] = request.form.get('register')
+    student = StudentsList.find_one_student({ "register": str(index) })
+    StudentsList.update_student(student)
     return redirect('/')
   
-  return render_template('update_student.html', student=students[index], student_index=index)
+  return render_template('update_student.html', student=student, student_index=index)
 
-@bp.route("/alunos/excluir/<int:index>", methods=["GET", "POST"])
-def remove_student(index):
-  if request.method == "GET":
-     return render_template('remove_student.html', student=students[index], student_index=index)
+# @bp.route("/alunos/excluir/<int:index>", methods=["GET", "POST"])
+# def remove_student(index):
+#   if request.method == "GET":
+#      return render_template('remove_student.html', student=students[index], student_index=index)
   
-  students.pop(index)
-  return redirect('/')
+#   students.pop(index)
+#   return redirect('/')
