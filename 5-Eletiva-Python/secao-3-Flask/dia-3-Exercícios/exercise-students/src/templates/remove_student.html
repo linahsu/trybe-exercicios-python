@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <title>Excluir Aluno</title>
+</head>
+<body>
+  <h1>Excluir Aluno</h1>
+  <p>Deseja realmente excluir o aluno "{{ student.name }}"?</p>
+  <form action="/alunos/excluir/{{ student_index }}" method="post">
+    <button type="submit">Excluir</button>
+  </form>
+  <a href="/alunos">Cancelar</a>
+</body>
+</html>

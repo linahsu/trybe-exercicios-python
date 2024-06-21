@@ -42,7 +42,15 @@ def update_student(index):
     students[index]["register"] = request.form.get('register')
     return redirect('/')
   
-  return render_template('update_student.html', student=students[index], aluno_index=index)
+  return render_template('update_student.html', student=students[index], student_index=index)
+
+@app.route("/alunos/excluir/<int:index>", methods=["GET", "POST"])
+def remove_student(index):
+  if request.method == "GET":
+     return render_template('remove_student.html', student=students[index], student_index=index)
+  
+  students.pop(index)
+  return redirect('/')
 
 
 def start_server(host: str = '0.0.0.0', port: int = 8000):
