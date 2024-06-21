@@ -24,6 +24,11 @@ class StudentsList:
   @classmethod
   def get_all_students(cls):
     return [StoredStudent(**student) for student in cls._collection.find()]
+  
+  @classmethod
+  def find_one_student(cls, query = {}):
+    student = asdict(cls._collection.find_one(query))
+    return student if student else None
 
   @classmethod
   def add_student(cls, student: Student):
