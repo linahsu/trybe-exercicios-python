@@ -23,16 +23,19 @@ class StudentsList:
 
   @classmethod
   def get_all_students(cls):
-    pass
+    return [StoredStudent(**student) for student in cls._collection.find()]
 
   @classmethod
   def add_student(cls, student: Student):
-    pass
+    cls._collection.insert_one(student.to_dict())
 
   @classmethod
-  def update_student(cls, id: str):
-    pass
+  def update_student(cls, student: StoredStudent):
+    cls._collection.find_one_and_update(
+      { "_id": student["_id"] },
+      { "$set": student },
+    )
 
   @classmethod
   def remove_student(cls, id: str):
-    pass
+    cls._collection.delete_one({ "_id": id })
