@@ -39,10 +39,11 @@ def update_student(index):
   
   return render_template('update_student.html', student=student, student_index=index)
 
-# @bp.route("/alunos/excluir/<int:index>", methods=["GET", "POST"])
-# def remove_student(index):
-#   if request.method == "GET":
-#      return render_template('remove_student.html', student=students[index], student_index=index)
+@bp.route("/alunos/excluir/<int:index>", methods=["GET", "POST"])
+def remove_student(index):
+  student = StudentsList.find_one_student({ "register": int(index) })
+  if request.method == "GET":
+     return render_template('remove_student.html', student=student, student_index=index)
   
-#   students.pop(index)
-#   return redirect('/')
+  StudentsList.remove_student(student)
+  return redirect('/')

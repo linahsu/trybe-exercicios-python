@@ -42,5 +42,5 @@ class StudentsList:
     )
 
   @classmethod
-  def remove_student(cls, id: str):
-    cls._collection.delete_one({ "_id": id })
+  def remove_student(cls, student: StoredStudent):
+    cls._collection.delete_one({ "_id": student["_id"] })
