@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <title>Página inicial</title>
+</head>
+<body>
+  <header>Lista de Filmes</header>
+  {% for movie in movies %}
+  <a href="/{{ movie.titulo }}">
+    <img src="{{ movie.poster }}" alt="movie poster">
+    <h4>{{ movie.titulo }}</h4>
+  </a>
+  {% endfor %}
+</body>
+</html>
