@@ -9,7 +9,7 @@ services:
         - FLASK_ENV=dev
       context: .
     volumes:
-      - ./src:/src
+      - ./app:/app
     ports:
       - 8000:8000
     depends_on:

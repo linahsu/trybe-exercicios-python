@@ -1,5 +1,5 @@
-use('db_filmes')
-db.filmes.insertMany([
+use('db_movies');
+db.movies.insertMany([
     {
         'titulo': 'Interestelar',
         'ano': 2014,

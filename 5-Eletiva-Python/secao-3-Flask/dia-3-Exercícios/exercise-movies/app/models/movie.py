@@ -1,22 +1,22 @@
 from pymongo.collection import Collection
 from .db import db
+from bson.objectid import ObjectId
 
 class Movie:
-  _connection: Collection = db["movies"]
+  _collection: Collection = db["movies"]
 
   def __init__(self, data):
     self.data = data
 
-  def find_movie_by_title(self, title: str = None):
-    if not title:
-      return [movie for movie in self._connection.find()]
-    
-    movie = self._connection.find_one({ "titulo": title })
-    return movie if movie else None
+  @classmethod
+  def find_movie_by_title(cls, query = {}):
+    movies = cls._collection.find(query)
+    return [cls(movie) for movie in movies]
   
-  def find_movie_by_id(self, id: str):
-    movie = self._connection.find_one({ "_id": id })
-    return movie if movie else None
+  @classmethod
+  def find_movie_by_id(cls, id):
+    movie = cls._collection.find_one({ "_id": ObjectId(id) })
+    return cls(movie) if movie else None
   
   def to_dict(self):
     return {
