@@ -19,7 +19,7 @@ def get_all_movies():
 
 @app.route("/<id>")
 def get_one_movie(id):
-  movie = movie_controller.find_movie_by_title(id)
+  movie = movie_controller.find_movie_by_id(id)
   return render_template('movie.html', movie=movie)
 
 

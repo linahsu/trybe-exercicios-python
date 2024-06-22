@@ -2,14 +2,23 @@
 <html lang="pt-BR">
 <head>
   <title>Página inicial</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <header>Lista de Filmes</header>
-  {% for movie in movies %}
-  <a href="/{{ movie.titulo }}">
-    <img src="{{ movie.poster }}" alt="movie poster">
-    <h4>{{ movie.titulo }}</h4>
-  </a>
-  {% endfor %}
+  <h1>Lista de Filmes</h1>
+  <form action="/" method="post">
+    <input type="text" name="tilte" id="title" placeholder="Digite o título do filme">
+    <button type="submit">Buscar</button>
+  </form>
+  <ul class="filmes">
+    {% for movie in movies %}
+    <li class="filme">
+      <a href="/{{ movie._id }}">
+        <h4>{{ movie.titulo }}</h4>
+        <img src="{{ movie.poster }}" alt="movie poster">
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
 </body>
 </html>
