@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <title>Detalhes do Filme</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='movie.css') }}">
+</head>
+<body>
+  <div class="filme">
+    <h1>{{ movie.titulo }}</h1>
+    <img src="{{ movie.poster }}" alt="movie poster">
+    <p>Ano: {{ movie.ano }}</p>
+    <p>Diretor: {{ movie.diretor }}</p>
+    <p>Genero: {{ movie.genero }}</p>
+  </div>
+
+  <a href="/">Voltar</a>
+</body>
+</html>
