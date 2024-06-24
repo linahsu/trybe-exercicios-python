@@ -1,0 +1,30 @@
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  width: 40%;
+  padding: 8px;
+}
+
+input {
+  display: block;
+  padding: 5px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+button {
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+button:hover {
+  background-color: rgb(0, 113, 128);
+}
+
+a {
+  text-decoration: none;
+  border-radius: 5px;
+  background-color: rgb(68, 231, 177);
+  border: 1px solid black;
+  padding: 3px;
+}
