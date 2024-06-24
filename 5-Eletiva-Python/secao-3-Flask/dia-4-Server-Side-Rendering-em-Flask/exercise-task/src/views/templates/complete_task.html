@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete task</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='complete_task.css') }}">
+</head>
+<body>
+  <h1>Completar Tarefa</h1>
+  <p>Deseja marcar tarefa como feita?</p>
+  <form action="/complete/{{ index }}" method="post">
+    <button type="submit">Confirmar</button>
+  </form>
+  <a href="/">Cancelar</a>
+</body>
+</html>

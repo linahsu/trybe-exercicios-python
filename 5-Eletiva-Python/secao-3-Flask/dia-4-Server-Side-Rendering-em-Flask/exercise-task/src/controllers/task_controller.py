@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect
 from models.task_model import Task
 
 task_controller = Blueprint("task_controller", __name__)
@@ -18,3 +18,12 @@ def tasks_page():
     tasks.append(Task(id, name))
 
   return render_template("tasks.html", tasks=tasks)
+
+@task_controller.route("/complete/<index>", methods=["GET", "POST"])
+def complete_task(index):
+  task = tasks[int(index)]
+  if request.method == "GET":
+    return render_template("complete_task.html", task=task, index=index)
+  
+  tasks.pop(int(index))
+  return redirect("/")
