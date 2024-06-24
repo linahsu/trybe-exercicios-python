@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks</title>
+</head>
+<body>
+  <h1>Lista de Tarefas</h1>
+
+  <tr>
+    <th>Id</th>
+    <th>Tarefa</th>
+    <th>Andamento</th>
+  </tr>
+
+  {% for task in tasks %}
+  <tr>
+    <td>{{ task.id }}</td>
+    <td>{{ task.name }}</td>
+    <td>
+      {% if task.completed == False %}
+      <a href="/complete/{{ loop.index0 }}">Marcar como Feito</a>
+      {% else %}
+      Feito
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+
+  <h3>Adicionar Tarefa</h3>
+  <form action="/" method="post">
+    <label for="id">Id:</label>
+    <input type="text" name="id" required>
+
+    <label for="name">Tarefa:</label>
+    <input type="text" name="name" required>
+  </form>
+</body>
+</html>
