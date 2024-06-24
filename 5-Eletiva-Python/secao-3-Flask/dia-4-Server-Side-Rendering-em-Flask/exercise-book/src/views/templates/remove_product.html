@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remove product</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='remove_product.css') }}">
+</head>
+<body>
+  <h1>Remover Produto</h1>
+
+  <p>Deseja remover produto {{ product.name }}?</p>
+  <form action="/products/delete/{{ index }}" method="post">
+    <button type="submit">Confirmar</button>
+  </form>
+  <a href="/products">Cancelar</a>
+</body>
+</html>

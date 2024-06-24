@@ -23,3 +23,12 @@ def add_new_product():
     return redirect("/products")
   
   return render_template("add_product.html")
+
+@product_controller.route("/delete/<index>", methods=["GET", "POST"])
+def remove_product(index):
+    product = products[int(index)]
+    if request.method == "GET":
+      return render_template("remove_product.html", product=product, index=index)
+  
+    products.pop(int(index))
+    return redirect("/products")
