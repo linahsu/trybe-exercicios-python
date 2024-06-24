@@ -25,5 +25,5 @@ def complete_task(index):
   if request.method == "GET":
     return render_template("complete_task.html", task=task, index=index)
   
-  tasks.pop(int(index))
+  tasks[int(index)].completed = True
   return redirect("/")
