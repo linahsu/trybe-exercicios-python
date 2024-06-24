@@ -1,0 +1,13 @@
+[tool.pytest.ini_options]
+minversion = "7.3"
+addopts = "-vv --capture=fd"
+testpaths = ["tests",]
+pythonpath = [
+    "src"
+]
+filterwarnings =[
+    "ignore::DeprecationWarning",
+]
+env = [
+    "TEST_DATABASE=test_db_project",
+]
