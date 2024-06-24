@@ -4,8 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add product</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='add_product.css') }}">
 </head>
 <body>
   <h1>Adicionar Produto</h1>
+
+  <form action="/products/add" method="post">
+    <label for="id">Id:</label>
+    <input type="text" name="id" required>
+
+    <label for="name">Nome:</label>
+    <input type="text" name="name" required>
+
+    <label for="price">Preço:</label>
+    <input type="text" name="price" required>
+
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <a href="/products">Lista de Produtos</a>
 </body>
 </html>

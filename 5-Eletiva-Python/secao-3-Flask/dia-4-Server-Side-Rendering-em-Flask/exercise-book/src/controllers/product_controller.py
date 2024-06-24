@@ -20,6 +20,6 @@ def add_new_product():
 
     products.append(Product(id, name, price))
     
-    return redirect("/")
+    return redirect("/products")
   
   return render_template("add_product.html")

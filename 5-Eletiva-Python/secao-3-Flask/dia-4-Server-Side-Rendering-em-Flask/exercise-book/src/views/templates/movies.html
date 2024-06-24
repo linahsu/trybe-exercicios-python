@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Movies</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='movies.css') }}">
 </head>
 <body>
   <h1>Lista de Filmes</h1>
@@ -11,7 +12,6 @@
     <tr>
       <th>Título</th>
       <th>Ano de lançamento</th>
-      <link rel="stylesheet" href="{{ url_for('static', filename='movies.css') }}">
     </tr>
   
     {% for movie in movies %}
