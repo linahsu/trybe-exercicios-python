@@ -153,3 +153,63 @@ Caso ocorra algum erro no comando anterior, pode ser porque um pacote adicional 
 ```bash
 sudo apt-get install python3-dev default-libmysqlclient-dev build-essential pkg-config
 ```
+
+### Criando a primeira aplicação
+
+Já criamos nosso projeto, agora chegou a hora de criar nossa primeira aplicação!
+
+Vamos começar voltando no arquivo settings.py e adicionando o app que iremos criar à lista preexistente:
+
+```bash
+# ecommerce/ecommerce/settings.py
+
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
++    "products",
+]
+```
+
+Com isso feito, é hora de efetivamente criar o app. O comando é similar ao utilizado para criar o projeto, mas agora vamos utilizar startapp em vez de startproject:
+
+```bash
+django-admin startapp products
+```
+
+### Criando uma tabela
+
+precisamos criar uma migration e executá-la:
+
+```bash
+python3 manage.py makemigrations
+python3 manage.py migrate
+```
+
+Lembre-se de executar os comandos acima dentro do diretório em que se encontra o arquivo manage.py.
+
+O primeiro comando (makemigrations) cria um arquivo de migration - resumidamente, são as instruções para a criação da tabela no banco de dados. Ele já olha para o seu model e cria a migration pra você! Já o segundo comando (migrate) executa as migrações, ou seja, usa as instruções do arquivo de migration e cria a tabela no banco de dados.
+
+### Inserindo dados no banco de dados via terminal
+
+O comando para acessar o terminal é:
+
+```bash
+python3 manage.py shell
+```
+
+Uma vez dentro do terminal, podemos importar o modelo que criamos:
+
+```bash
+from products.models import Product
+```
+
+A partir disso, podemos criar um novo objeto e salvá-lo no banco de dados:
+
+```bash
+moka = Product(name="Moka - 6 xícaras", price=199.99, amount=10, description="Cafeteira italiana, serve 6 xícaras, não elétrica")
+moka.save()
+```
