@@ -11,5 +11,8 @@ class Product(models.Model):
         upload_to="media/products", null=True, blank=True
     )
     
+    def __str__(self):
+        return f'{self.name} - {self.price}'
+    
 # python3 -m pip install Pillow
 # Anota aí 📝: Pillow é um pacote Python que adiciona suporte para imagens ao Django. Ele é necessário para que possamos utilizar o campo ImageField.

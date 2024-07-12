@@ -213,3 +213,49 @@ A partir disso, podemos criar um novo objeto e salvá-lo no banco de dados:
 moka = Product(name="Moka - 6 xícaras", price=199.99, amount=10, description="Cafeteira italiana, serve 6 xícaras, não elétrica")
 moka.save()
 ```
+
+## Django admin
+
+O Django admin é uma ferramenta que permite a criação de um painel de administração para o projeto. Com ele, é possível visualizar, criar, editar e excluir objetos do banco de dados (o famoso CRUD), sem a necessidade de escrever código.
+
+Lembra da rota '/admin' que você viu no arquivo urls.py? Ela é mais um exemplo dos recursos prontos para uso que o Django oferece, pois é ela que permite o acesso ao painel de administração do projeto.
+
+Se você acessar agora mesmo localhost:8000/admin, verá que já existe um painel de administração criado. Ele exige, porém, um login, e não temos uma autenticação de admin configurada para o nosso projeto. Faremos essa configuração agora!
+
+### Criando um superusuário
+
+A primeira coisa que devemos fazer é criar um superusuário para o projeto. Esse perfil terá permissões administrativas,ou seja, poderá acessar o painel de administração e realizar qualquer operação.
+
+Para criar um superusuário, na raiz do projeto, execute o comando:
+
+```bash
+python3 manage.py createsuperuser
+```
+
+Será preciso informar um nome de usuário, e-mail e senha. Preencha os dados e, em seguida, acesse localhost:8000/admin e faça login com os dados de superusuário que você criou.
+
+### Registrando o modelo
+
+Para que o Django admin funcione, é preciso registrar os modelos criados no arquivo admin.py, dentro da pasta do app. Fazer isso é bem simples: abra o arquivo ecommerce/products/admin.py e adicione o código:
+
+```bash
+from django.contrib import admin
+from products.models import Product
+from products.models import Customer # Modelo criado no exercício de fixação
+
+
+admin.site.register(Product)
+admin.site.register(Customer)
+```
+
+Já que estamos alterando este arquivo, que tal mudarmos também o cabeçalho do painel? Para isso, basta adicionar a linha no arquivo ecommerce/products/admin.py:
+
+```bash
+from django.contrib import admin
+from products.models import Product
+
+
++ admin.site.site_header = "Trybe Products E-commerce"
+admin.site.register(Product)
+admin.site.register(Customer)
+```
