@@ -841,19 +841,315 @@ Agora sim! 🎉🎉🎉 Ainda da para melhorar um pouquinho a visualização dos
 </br>
 
 <details>
-<summary><strong> Colocando o primeiro template para funcionar </strong></summary>
+<summary><strong> Criando o template de detalhes do evento </strong></summary>
+
+Para conseguir criar o template de detalhes do evento, será necessário criar uma nova função no arquivo views.py. Essa função renderizará o novo template details.html que será criado dentro da pasta _templates_. Além disso, na função a ser implementada, é necessário passar à view o contexto com o evento específico que será renderizado no template.
+
+Mas como o template saberá qual evento será renderizado? 😱 Resposta: Será recebido um parâmetro na função que permitirá o resgate do evento e sua renderização. No modelo Event, esse parâmetro é o id, chave primária do evento. Observe a implementação:
 
 ```bash
+# events/views.py
+from events.models import Event
+from django.shortcuts import render
+from django.shortcuts import get_object_or_404
+
+
+def event_details(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    return render(request, 'details.html', {'event': event})
 ```
 
 ```bash
+<!-- events/templates/details.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ event.title }}
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>{{ event.title }}</h1>
+
+    <p>{{ event.description }}</p>
+
+    <p>{{ event.date|date }} - {{ event.location }}</p>
+
+    {% if event.is_remote %}
+        <p> Evento remoto </p>
+    {% else %}
+        <p> Evento presencial </p>
+    {% endif %}
+
+{% endblock %}
 ```
+
+Na função event_details, o parâmetro event_id será recebido e utilizado para resgatar o evento específico que se quer renderizar. Esse resgate é feito com o uso da função get_object_or_404(), essa função recebe dois parâmetros: o primeiro é o modelo a ser resgatado e o segundo indica a busca a ser feita. No exemplo acima, é buscado por um Event cujo id é igual ao event_id recebido como parâmetro. Caso o evento não seja encontrado, será levantada uma exceção do tipo Http404.
+
+Ao passar a chave event no contexto, é possível acessá-la dentro do template e usá-la para recuperar o evento alvo com todos os seus atributos. Esses atributos podem ser acessados dentro do template através da sintaxe {{ event.title }}, por exemplo. Assim, é possível montar um template genérico para a renderização de qualquer evento, desde que ele seja passado no contexto. 🤯
+
+Perceba também que foi utilizada a sintaxe condicional com a Tag de Template {% if %} {% else %} e, assim como no {% for %}, é necessário indicar o fim da condição com {% endif %}.
+
+Você deve ter notado o {{ event.date|date }} no template, né? A sintaxe para o uso de filtros de template é composta da variável à qual quer se aplicar o filtro seguida por um | e logo depois o nome do filtro. O filtro, nesse caso, é como uma máscara formatadora: ela pega a informação e ajusta a forma como ela será exibida. Nesse exemplo foi usado o filtro de data, para que a formatação da data seja no padrão DD de MMMMM de AAAA.
+
+É possível, naturalmente, aplicar outras configurações para mostrar a data em outro formato. Além do filtro de data, existem outros filtros já implementados e que podem ser acessados em todos os templates como first, last, lower, upper, length, random, slugify, etc. Para saber mais sobre os filtros disponíveis, acesse a documentação oficial..
+
+O código que foi apresentado ainda não funciona: falta vincular a função criada com uma rota específica, dentro do arquivo urls.py. Será nessa rota em que haverá a indicação de que o event_id será passado como parâmetro. Veja a implementação:
+
+```bash
+# events/urls.py
+from django.urls import path
+from events.views import index, event_details, about
+
+
+urlpatterns = [
+    path("", index, name="home-page"),
+    path("about", about, name="about-page"),
+    path("events/<int:event_id>", event_details, name="details-page"),
+#   path("/rota-comentada", função-que-será-executada, name="nome-que-identifica-a-rota")
+]
+```
+
+A rota events/<int:event_id> indica que a rota events/ será seguida de um número inteiro, que representa um event_id e que será passado como parâmetro para a função event_details. Vale lembrar que o nome da rota é importante para que seja possível acessá-la dentro do template.
 
 </details>
 </br>
 
 <details>
-<summary><strong> Colocando o primeiro template para funcionar </strong></summary>
+<summary><strong>Conectando a página inicial com a página de detalhes</strong></summary>
+
+A página de detalhes de um evento específico já funciona, acesse a rota events/<int:event_id> e veja! Entretanto, ainda não é possível acessá-la de maneira rápida e eficiente através da página inicial. Para adaptar a home.html , será necessário que você crie um link de redirecionamento para a página de detalhes de cada evento. Tarefa fácil ao usarmos a tag de template url que permite criar um link absoluto, veja:
+
+```bash
+<!-- events/templates/home.html -->
+{% extends 'base.html' %}
+
+ {% block title %}
+   Primeiro Template
+ {% endblock %}
+
+ {% block content %}
+     <h1> Meu primeiro template usando Django! </h1>
+     <h2> {{ company }} </h2>
+    {% for event in events %}
+       <p> <a href="{% url 'details-page' event.id %}"> {{ event }} </a> </p>
+    {% empty %}
+        <p> Não existem eventos cadastrados </p>
+    {% endfor %}
+{% endblock %}
+```
+
+A tag de template {% url %} pode ser usada quando é necessário fazer a chamada de uma rota específica que já foi implementada e tem uma identificação no arquivo urls.py. No exemplo acima, a tag de template é usada para invocar a rota identificada como details-page, e, como essa rota necessita do id do evento como parâmetro, ele é passado logo em seguida com event.id. Assim, ao adicionar a tag a cujo atributo href aponta para a rota de detalhes já implementada, é feito o vínculo entre as rotas. Agora, ao executar a aplicação você deve ter algo como:
+
+</details>
+</br>
+
+<details>
+<summary><strong> Lidando com exceções </strong></summary>
+
+O que será que acontece se uma pessoa tenta acessar uma página de evento que não existe? Tipo a página http://127.0.0.1:8000/events/99999 😱 A resposta para essa pergunta é: como durante a implementação a função get_object_or_404 foi usada, automaticamente, se não for possível resgatar o evento com id informado, será renderizada uma página padrão do Django indicando uma resposta 404, Not Found. Contudo, é possível personalizar, tratar essa exceção e exibir a página que desejar, veja só:
+
+```bash
+# events/views.py
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404
+from events.models import Event
+
+
+def event_details(request, event_id):
+    try:
+        event = get_object_or_404(Event, id=event_id)
+        return render(request, 'details.html', {'event': event})
+    except Http404:
+        return render(request, '404.html')
+```
+
+Daí, basta implementar o template 404.html que deverá ser criado junto aos demais templates:
+
+```bash
+<!-- events/templates/404.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+    Página não encontrada
+{% endblock %}
+
+{% block content %}
+    <h1> 404 - Página não encontrada </h1>
+    <h2> Desculpe, mas o evento não foi encontrado </h2>
+    <p><a href="{% url 'home-page' %}"> Volte a página inicial </a></p>
+{% endblock %}
+```
+
+Agora, ao tentar acessar uma página de evento que não existe, a exceção Http404 levantada pela função get_object_or_404 será tratada pelo try/except e resulta na renderização da página 404.html. Na implementação da página foi usada a mesma sintaxe de herança de templates, e ao final do bloco content foi adicionado um link para a página inicial, usando novamente a tag de _template_ {% url %} vinculando assim uma rota previamente identificada no urls.py (home-page).
+
+</details>
+</br>
+
+<details>
+<summary><strong> Aprimorando os templates </strong></summary>
+
+Pra finalizar a nossa aplicação, que tal acrescentarmos estilo, com CSS, às nossas páginas? Com isso feito, nossa aplicação já estará pronta pra ser usada!
+
+Primeiro, vamos fazer uma alteração no nosso template home.html para facilitar a estilização da página. Vamos incluir um pouco mais de estrutura HTML para termos com o que trabalhar no CSS - além de incluir uma lógica para exibição de imagens dos eventos!
+
+```bash
+<!-- events/templates/home.html -->
+ {% extends 'base.html' %}
+ {% load static %}
+
+ {% block title %}
+   Primeiro Template
+ {% endblock %}
+
+ {% block content %}
+     <h1> Eventos {{ company }} </h1>
+    {% for event in events %}
+        <a href="{% url 'details-page' event.id %}"> 
+            <div>
+              {% if event.image %}
+                <img src="{% static event.image.url %}" alt="Imagem sobre o evento" height="50">
+              {% endif %}
+                <h3> {{ event.title }} </h3>
+                <p> {{ event.date }} </p>
+                <p> {{ event.location }} </p>
+            </div>
+        </a>
+    {% empty %}
+        <p> Não existem eventos cadastrados </p>
+    {% endfor %}
+ {% endblock %}
+```
+
+De olho na dica 👀: Se você tiver algum registro no banco de eventos que não possua imagem, a tag img não será renderizada em razão da condição imposta.
+
+Use o painel admin para criar alguns eventos de maneira que você consiga fazer o upload de uma imagem que represente o evento. Para criar uma conta admin você pode executar python3 manage.py createsuperuser no mesmo diretório em que se encontra o arquivo manage.py. Além disso, também será necessário fazer o registro do modelo Event dentro do site, usando o arquivo admin.py:
+
+```bash
+from django.contrib import admin
+from events.models import Event
+
+
+admin.site.site_header = 'Event Manager Admin Panel'
+admin.site.register(Event)
+```
+
+Mesmo adicionando um evento com imagem você ainda não será capaz de visualizar as imagens. Isso acontece porque ainda não fizemos a configuração de como vamos servir os arquivos estáticos do projeto.
+
+</details>
+</br>
+
+<details>
+<summary><strong> Arquivos estáticos </strong></summary>
+
+O primeiro passo para fazer a configuração é instalar dois pacotes que ajudarão com essa tarefa:
+
+```bash
+pip install whitenoise # Serve os arquivos estáticos a partir de um diretório
+pip install django-static-autocollect # Coleta os arquivos estáticos e os coloca em um diretório
+```
+
+Faça as modificações necessárias no arquivo settings.py:
+
+```bash
+# event_manager/settings.py
+...
+
+ INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'events',
++   'static_autocollect'
+ ]
+
+ MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
++   'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+ ]
+
+ ...
+
++ MEDIA_URL = ''
++ MEDIA_ROOT = BASE_DIR / 'media'
+
+ STATIC_URL = 'static/'
++ STATIC_ROOT = BASE_DIR / 'staticfiles'
+
++ STATICFILES_DIRS = [
++     str(BASE_DIR / 'media/'),
++ ]
+
++ STORAGE = {
++    "default": {
++        "BACKEND": "django.core.files.storage.FileSystemStorage",
++    },
++    "staticfiles": {
++        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
++    }
++ }
+
++ WHITE_NOISE_AUTOREFRESH = True
+```
+
+Com essas modificações estamos:
+
+instalando o pacote static_autocollect no projeto;
+adicionando o pacote whitenoise na lista de middlewares;
+definindo o caminho relativo onde se encontra o diretório media em MEDIA_URL;
+definindo o caminho absoluto em MEDIA_ROOT e que será usado como caminho base para o upload de imagens vindas das pessoas usuárias;
+definindo o caminho absoluto em STATIC_ROOT e que será usado pelo whitenoise para servir os arquivos estáticos;
+definindo uma lista de caminhos em STATICFILES_DIRS que serão usados pelo static_autocollect para coletar os arquivos estáticos e direcionar para STATIC_ROOT;
+definindo o comportamento de armazenamento do whitenoise;
+definindo que o whitenoise deve atualizar os arquivos estáticos automaticamente.
+Use o comando python3 manage.py watch_static & python3 manage.py runserver para executar o servidor e o static_autocollect em paralelo. Agora, a próxima adição de registro que for feita já será refletida na página inicial.
+
+De olho na dica 👀: A tag de template static serve para indicar o caminho relativo do arquivo estático e junto com os whitenoise e static_autocollect, possibilita servir os arquivos estáticos. Anota aí 📝: A metodologia mais comum para servir arquivos estáticos é separar e servi-los externamente, leia mais sobre isso.
+
+Com um pouco de estilização, você pode deixar sua aplicação mais apresentável. Você pode usar CSS puro ou qualquer framework de CSS que desejar, fica à sua escolha e como se sentir mais confortável. A seguir temos um exemplo de estilização para a página inicial, ele foi feito usando o Tailwind CSS e contém exatamente as mesmas tags que foram apresentadas até então.
+
+Você pode fazer o download dos templates estilizados: base.html e home.html. Nesse exemplo foi usado o CDN do Tailwind CSS, mas você poderia registrar o seu próprio arquivo CSS no template base.html.
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
 
 
 </details>

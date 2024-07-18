@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from events.models import Event
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 
 def index(request):
@@ -16,5 +17,8 @@ def about(request):
 
 
 def event_details(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    return render(request, 'details.html', {'event': event})
+    try:
+        event = get_object_or_404(Event, id=event_id)
+        return render(request, 'details.html', {'event': event})
+    except Http404:
+        return render(request, '404.html')

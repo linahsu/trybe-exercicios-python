@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Erro 404 - Not found
+{% endblock %}
+
+{% block content %}
+    <h1>Erro 404 - Not found</h1>
+    <h2>Desculpe, mas o evento não foi encontrado</h2>
+    <p><a href="{% url 'home-page' %}">Volte a página inicial</a></p>
+{% endblock %}
