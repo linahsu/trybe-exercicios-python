@@ -541,6 +541,156 @@ Relembrando 🧠: Para executar o servidor faça: python3 manage.py runserver no
 </br>
 
 <details>
+<summary><strong> Herança de templates</strong></summary>
+
+
+O Django permite que não se crie toda a estrutura de HTML para cada um dos templates. A DTL (Django Template Language) permite que se crie um template base que contém a estrutura essencial do HTML e lacunas intencionais - com cada template filho preenchendo as lacunas com o próprio conteúdo. Esse mecanismo é chamado de Herança de templates. Como exemplo, relembre o template home.html que criamos:
+
+```bash
+<!-- events/templates/home.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primeiro Template</title>
+</head>
+<body>
+    <h1> Meu primeiro template usando Django! </h1>
+</body>
+</html>
+```
+
+Para ver a herança acontecendo na prática, copie todo o conteúdo desse arquivo e cole dentro de um novo arquivo HTML chamado base.html dentro do diretório events/templates.
+
+Substitua, em seguida, o conteúdo da tag title (Primeiro Template) por {% block title %} {% endblock %}, além disso, também substitua a linha da tag h1 por {% block content %} {% endblock %}. Ao final dessas alterações o arquivo base.html fica assim:
+
+```bash
+<!-- events/templates/base.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock %}</title>
+</head>
+<body>
+    {% block content %} {% endblock %}
+</body>
+</html>
+```
+
+A sintaxe {% %} indica que está sendo usada uma Tag de template do DTL. Ela é a lacuna que mencionamos mais cedo - um template filho irá preenchê-la. Nesse caso, usamos a tag block. Existem muitas Tags de template já implementadas no DTL. Você pode conferir todas as tags nativas do DTL na documentação oficial.
+
+Ao fazer essas alterações, foram criados blocos vazios que poderão ser preenchidos por aqueles templates que herdarem o arquivo base.html. Acima, criamos dois blocos - um chamado title e outro chamado content - para escrever o título da página que será exibida e para colocar todo o conteúdo HTML que se quer exibir, respectivamente.
+
+Para usar a herança de template, faça o seguinte:
+
+Vá no template filho e inclua no seu cabeçalho a seguinte sintaxe: {% extends 'base.html' %}, onde se usa a palavra reservada extends seguida de qual template se quer herdar.
+Modifique o template filho, por exemplo o home.html, criando os blocos com os mesmos nomes daqueles criados no template herdado de acordo com a sintaxe abaixo.
+Anota aí 📝: para que a herança aconteça é obrigatório que o {% extends 'nome-do-template.html' %} seja a primeira tag de template que aparece no arquivo.
+
+```bash
+<!-- events/templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+  Primeiro Template
+{% endblock %}
+
+{% block content %}
+  <h1> Meu primeiro template usando Django! </h1>
+{% endblock %}
+```
+
+Note que, ao invés de toda a estrutura base do HTML, você inclui as tags do template base e as preenche com o HTML que quiser. Ao rodar sua aplicação, verá que tudo continua funcionando, ou seja, a herança foi feita com sucesso! 👏
+
+</details>
+</br>
+
+<details>
+<summary><strong> Criando o model Event </strong></summary>
+
+Antes de exibir a lista de eventos no template, é importante definir o modelo que será usado para representá-los. Eis ele abaixo:
+
+```bash
+# events/models.py
+from django.db import models
+
+
+class Event(models.Model):
+    TYPE_CHOICES = (
+        ('C', 'Conference'),
+        ('S', 'Seminar'),
+        ('W', 'Workshop'),
+        ('O', 'Other'),
+    )
+
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    date = models.DateTimeField()
+    location = models.CharField(max_length=200)
+    event_type = models.CharField(max_length=50, choices=TYPE_CHOICES)
+    is_remote = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='events/img', blank=True)
+
+    def __str__(self): # O método __str__ é sobrescrito para indicar como será a visualização do objeto
+        return f'{self.title} - {self.date} - {self.location}' # Título do evento - Data - Local
+```
+
+A tabela event ao ser criada no banco terá 8 colunas, sendo elas:
+
+id: inteiro e chave primária única pro evento (que não precisa ser explicitamente declarado no modelo);
+title: texto com no máximo 200 caracteres;
+description: texto sem limitação de caracteres;
+date: data e hora do evento;
+location: texto com no máximo 200 caracteres;
+event_type: texto com no máximo 50 caracteres e que só pode assumir os valores C, S, W ou O (ao usar o parâmetro choices, o Django faz a validação se o valor inserido é um dos valores permitidos);
+is_remote: booleano (True ou False) que indica se o evento é remoto ou não;
+image: imagem que será salva na pasta {CAMINHO-DE-MÍDIA}/events/img (o caminho de mídia pode ser definido no arquivo settings.py)
+
+Relembrando 🧠: quando há um campo imagem é preciso fazer a instalação do módulo Pillow. Para isso, basta executar o comando pip install Pillow no terminal. Relembrando 🧠: depois de definir o modelo que será usado, crie as migrations e logo depois migre-as para o banco. Para isso, execute python3 manage.py makemigrations e python3 manage.py migrate no terminal.
+
+</details>
+</br>
+
+<details>
+<summary><strong> Renderizando os eventos no template </strong></summary>
+
+Toda função que renderiza um template usando o método render, do Django, é capaz também de fornecer um contexto para esse template. O termo contexto aqui se refere a um dicionário (dict), que pode ser construído dentro da função e passado para o template como terceiro parâmetro do método render.
+
+Todas as chaves do contexto podem ser acessadas diretamente pelo template através da sintaxe {{ chave }}. Assim, o template fará a renderização do valor que estava associado à chave. Modifique a função index do arquivo events/views.py para que ela fique assim:
+
+```bash
+# events/views.py
+from django.shortcuts import render
+
+
+def index(request):
+    context = {"company": "Trybe"}
+    return render(request, 'home.html', context)
+```
+
+Modifique também seu template home.html para renderizar o valor da chave company do contexto:
+
+```bash
+<!-- events/templates/home.html -->
+ {% extends 'base.html' %}
+
+ {% block title %}
+   Primeiro Template
+ {% endblock %}
+
+ {% block content %}
+     <h1> Meu primeiro template usando Django! </h1>
+     <h2> {{ company }} </h2>
+ {% endblock %}
+```
+
+</details>
+</br>
+
+<details>
 <summary><strong> Colocando o primeiro template para funcionar </strong></summary>
 
 
