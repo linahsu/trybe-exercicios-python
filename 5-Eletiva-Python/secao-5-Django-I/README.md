@@ -333,13 +333,6 @@ TEMPLATES = [
 <details>
 <summary><strong> Colocando o primeiro template para funcionar </strong></summary>
 
-
-</details>
-</br>
-
-<details>
-<summary><strong> Configuração de Templates no Django </strong></summary>
-
 ### Setup inicial
 
 Para começar, crie o ambiente virtual que será utilizado e faça a instalação dos pacotes que serão utilizados:
@@ -442,6 +435,114 @@ Execute o comando migrate do Django:
 ```bash
 python3 manage.py migrate
 ```
+
+</details>
+</br>
+
+<details>
+<summary><strong> Renderizando seu primeiro template </strong></summary>
+
+Antes de começarmos, saiba que a configuração padrão do Django permite que você crie seus templates dentro de cada uma das aplicações do seu projeto, e assim faremos.
+
+É possível alterar essa configuração para indicar diretórios específicos onde o Django deve procurar por templates. Por exemplo: na configuração abaixo, o Django irá buscar por templates dentro do diretório _templates_, que está na raiz do projeto e não mais dentro de cada uma das aplicações do projeto. Lembre-se que você não precisa fazer a alteração abaixo.
+
+```bash
+# event_manager/settings.py
++ import os
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+-       'DIRS': [],
++       'DIRS': [os.path.join(BASE_DIR,'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+```
+
+Agora sim, crie um novo diretório com nome templates dentro da aplicação events e, em seguida, crie o arquivo home.html dentro do novo diretório e inicie um arquivo HTML:
+
+```bash
+<!--events/templates/home.html-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primeiro Template</title>
+</head>
+<body>
+    <h1> Meu primeiro template usando Django! </h1>
+</body>
+</html>
+```
+
+O próximo passo é implementar a view que irá fazer a renderização do template criado. Acesse o arquivo views.py dentro do app events e escreva a função que fará essa tarefa:
+
+```bash
+# events/views.py
+from django.shortcuts import render
+
+
+def index(request):
+    return render(request, 'home.html')
+```
+
+Prontinho! A função acima usa o método render do Django para renderizar o template passado como segundo parâmetro home.html. O primeiro parâmetro, request, representa a requisição feita pela pessoa que usa a aplicação.
+
+Mas agora você pode estar se perguntando: Como faço para invocar a função que foi implementada? 🤔
+
+A resposta é: através das rotas da nossa aplicação. A função criada será vinculada a uma das rotas da aplicação e, em seguida, serão incluídas nas rotas da aplicação no projeto.
+
+Crie o arquivo urls.py dentro da aplicação events e nele escreva o código abaixo:
+
+```bash
+# events/urls.py
+from django.urls import path
+from events.views import index
+
+
+urlpatterns = [
+    path("", index, name="home-page")
+#   path("/rota-comentada", função-que-será-executada, name="nome-que-identifica-a-rota")
+]
+```
+
+No código acima, uma lista de rotas (urlpatterns) foi definida e cada uma das rotas é definida através da função path, que recebe três parâmetros: o primeiro é o caminho para a rota em si ("" indica a raiz da aplicação https://localhost:8000/), o segundo é a função que será executada quando a rota for acessada e o terceiro é o nome que identifica essa rota.
+
+Agora, será necessário incluir as rotas da aplicação no projeto principal. Para isso, acesse o arquivo urls.py do projeto e faça a seguinte alteração:
+
+```bash
+# event_manager/urls.py
+  from django.contrib import admin
+  from django.urls import path, include
+
+
+  urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('events.urls'))
+  ]
+```
+
+Com essas alterações você acabou de incluir as rotas da aplicação events no projeto event_manager, e fez isso usando o método include nativo do Django.
+
+Acabou! 🎉🎉🎉 Execute o servidor e acesse a rota http://localhost:8000/ para ver o template criado sendo renderizado.
+
+Relembrando 🧠: Para executar o servidor faça: python3 manage.py runserver no mesmo diretório em que se encontra o arquivo manage.py.
+</details>
+</br>
+
+<details>
+<summary><strong> Colocando o primeiro template para funcionar </strong></summary>
+
 
 </details>
 </br>
