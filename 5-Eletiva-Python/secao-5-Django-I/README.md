@@ -1,6 +1,7 @@
 # Getting started
 
-### Preparando o ambiente
+<details>
+<summary><strong> Preparando o ambiente </strong></summary>
 
 Caso a versão do Python seja inferior a 3.10, você precisará atualizar o Python. Para isso, você pode utilizar o Pyenv, basta seguir nosso tutorial do Guia de configuração de ambiente. Isso é necessário porque mais à frente utilizaremos uma biblioteca que não funciona bem com a versão 3.9 ou inferiores do Python.
 
@@ -30,8 +31,13 @@ django-admin startproject ecommerce .
 ```
 
 Simples assim e nosso primeiro projeto foi criado! 🎉
+</details>
+</br>
 
-### Executando o projeto
+
+<details>
+<summary><strong> Executando o projeto </strong></summary>
+
 
 Para executar o projeto, basta executar o comando:
 
@@ -44,8 +50,11 @@ o Django possui algumas migrations internas que ainda não foram aplicadas ao ba
 ```bash
 python3 manage.py migrate
 ```
+</details>
+</br>
 
-### Estrutura do projeto
+<details>
+<summary><strong> Estrutura do projeto </strong></summary>
 
 Passando rapidamente por cada um dos arquivos dentro do diretório ecommerce, que é o diretório do projeto em si, temos os arquivos:
 
@@ -83,8 +92,11 @@ Como dito anteriormente, este arquivo reúne as rotas do projeto, com alguns val
 A primeira coisa que temos é a função path, que define uma rota. Como parâmetro ela recebe a URL que será acessada e a função que será executada quando a URL for acessada.
 
 Uma surpresa é que já temos uma rota definida no arquivo, a admin/, que é a interface administrativa que o Django fornece para o projeto. Vamos explorar ela com mais detalhes em breve. 😎
+</details>
+</br>
 
-### Usando outro banco de dados
+<details>
+<summary><strong> Usando outro banco de dados </strong></summary>
 
 Você pode iniciar apagando o arquivo db.sqlite3 do seu projeto, pois ele não será mais utilizado. Faremos as alterações no projeto para que ele use como banco de dados nosso conhecido MySQL, via Docker.
 
@@ -153,8 +165,11 @@ Caso ocorra algum erro no comando anterior, pode ser porque um pacote adicional 
 ```bash
 sudo apt-get install python3-dev default-libmysqlclient-dev build-essential pkg-config
 ```
+</details>
+</br>
 
-### Criando a primeira aplicação
+<details>
+<summary><strong> Criando a primeira aplicação </strong></summary>
 
 Já criamos nosso projeto, agora chegou a hora de criar nossa primeira aplicação!
 
@@ -180,7 +195,11 @@ Com isso feito, é hora de efetivamente criar o app. O comando é similar ao uti
 django-admin startapp products
 ```
 
-### Criando uma tabela
+</details>
+</br>
+
+<details>
+<summary><strong> Criando uma tabela </strong></summary>
 
 precisamos criar uma migration e executá-la:
 
@@ -193,7 +212,11 @@ Lembre-se de executar os comandos acima dentro do diretório em que se encontra 
 
 O primeiro comando (makemigrations) cria um arquivo de migration - resumidamente, são as instruções para a criação da tabela no banco de dados. Ele já olha para o seu model e cria a migration pra você! Já o segundo comando (migrate) executa as migrações, ou seja, usa as instruções do arquivo de migration e cria a tabela no banco de dados.
 
-### Inserindo dados no banco de dados via terminal
+</details>
+</br>
+
+<details>
+<summary><strong> Inserindo dados no banco de dados via terminal </strong></summary>
 
 O comando para acessar o terminal é:
 
@@ -214,6 +237,9 @@ moka = Product(name="Moka - 6 xícaras", price=199.99, amount=10, description="C
 moka.save()
 ```
 
+</details>
+</br>
+
 ## Django admin
 
 O Django admin é uma ferramenta que permite a criação de um painel de administração para o projeto. Com ele, é possível visualizar, criar, editar e excluir objetos do banco de dados (o famoso CRUD), sem a necessidade de escrever código.
@@ -222,7 +248,11 @@ Lembra da rota '/admin' que você viu no arquivo urls.py? Ela é mais um exemplo
 
 Se você acessar agora mesmo localhost:8000/admin, verá que já existe um painel de administração criado. Ele exige, porém, um login, e não temos uma autenticação de admin configurada para o nosso projeto. Faremos essa configuração agora!
 
-### Criando um superusuário
+</details>
+</br>
+
+<details>
+<summary><strong> Criando um superusuário </strong></summary>
 
 A primeira coisa que devemos fazer é criar um superusuário para o projeto. Esse perfil terá permissões administrativas,ou seja, poderá acessar o painel de administração e realizar qualquer operação.
 
@@ -234,7 +264,11 @@ python3 manage.py createsuperuser
 
 Será preciso informar um nome de usuário, e-mail e senha. Preencha os dados e, em seguida, acesse localhost:8000/admin e faça login com os dados de superusuário que você criou.
 
-### Registrando o modelo
+</details>
+</br>
+
+<details>
+<summary><strong> Registrando o modelo </strong></summary>
 
 Para que o Django admin funcione, é preciso registrar os modelos criados no arquivo admin.py, dentro da pasta do app. Fazer isso é bem simples: abra o arquivo ecommerce/products/admin.py e adicione o código:
 
@@ -259,3 +293,155 @@ from products.models import Product
 admin.site.register(Product)
 admin.site.register(Customer)
 ```
+
+</details>
+</br>
+
+## Templates
+
+<details>
+<summary><strong> Configuração de Templates no Django </strong></summary>
+
+Toda vez que um projeto Django é iniciado, um arquivo settings.py é criado dentro da pasta do projeto, e é dentro deste arquivo que é feita a configuração para indicar o mecanismo de template que será utilizado: Jinja2 ou o DTL.
+
+Como o DTL é o mecanismo de template padrão do Django, não é necessário fazer nenhuma modificação para conseguir usá-lo. Contudo, caso no futuro você queira estudar o uso do Jinja2 como mecanismo de template, basta fazer a seguinte modificação no settings.py:
+
+```bash
+    ...
+TEMPLATES = [
+    {
+-       'BACKEND': 'django.template.backends.django.DjangoTemplates',
++       'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+    ...
+```
+
+</details>
+</br>
+
+<details>
+<summary><strong> Colocando o primeiro template para funcionar </strong></summary>
+
+
+</details>
+</br>
+
+<details>
+<summary><strong> Configuração de Templates no Django </strong></summary>
+
+### Setup inicial
+
+Para começar, crie o ambiente virtual que será utilizado e faça a instalação dos pacotes que serão utilizados:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install django
+pip install Pillow # biblioteca para trabalhar com imagens
+pip install mysqlclient # biblioteca para se comunicar com o MySQL
+```
+
+Em seguida, crie o projeto Django e a aplicação:
+
+```bash
+django-admin startproject event_manager .
+django-admin startapp events
+```
+
+Faça a instalação da aplicação dentro do projeto no arquivo settings.py:
+
+```bash
+# event_manager/settings.py
+...
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
++   'events',
+]
+
+...
+```
+
+Faça também a mudança para usar o MySQL como banco de dados:
+
+```bash
+# event_manager/settings.py
+...
+
+DATABASES = {
+    'default': {
+-       'ENGINE': 'django.db.backends.sqlite3',
++       'ENGINE': 'django.db.backends.mysql',
+-       'NAME': BASE_DIR / 'db.sqlite3',
++       'NAME': 'event_manager_database',
++       'USER': 'root',
++       'PASSWORD': 'password',
++       'HOST': '127.0.0.1',
++       'PORT': '3306',
+    }
+}
+
+...
+```
+
+Crie o arquivo para o script SQL dentro do diretório ./database:
+
+```bash
+mkdir database && cd database
+touch 01_create_database.sql
+```
+
+Adicione o conteúdo do script para criação do banco de dados event_manager_database:
+
+```bash
+CREATE DATABASE IF NOT EXISTS event_manager_database;
+
+USE event_manager_database;
+```
+
+Crie o Dockerfile na raiz do projeto:
+
+```bash
+FROM mysql:8.0.32
+
+ENV MYSQL_ROOT_PASSWORD password
+COPY ./database/01_create_database.sql /docker-entrypoint-initdb.d/data.sql01
+```
+
+Faça o build da imagem, basta rodar o comando dentro da pasta do projeto que contém o arquivo Dockerfile.
+
+```bash
+docker build -t event-manager-db .
+```
+
+Execute o container e o script de criação do banco copiado no Dockerfile:
+
+```bash
+Execute o container e o script de criação do banco copiado no Dockerfile:
+```
+
+Acesse o banco de dados pelo Workbench e verifique se ele foi criado corretamente.
+
+Execute o comando migrate do Django:
+
+```bash
+python3 manage.py migrate
+```
+
+</details>
+</br>
