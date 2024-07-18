@@ -10,7 +10,7 @@ class Event(models.Model):
     )
 
     title = models.CharField(max_length=200)
-    description = models.TextField
+    description = models.TextField()
     date = models.DateTimeField()
     location = models.CharField(max_length=200)
     event_type = models.CharField(
