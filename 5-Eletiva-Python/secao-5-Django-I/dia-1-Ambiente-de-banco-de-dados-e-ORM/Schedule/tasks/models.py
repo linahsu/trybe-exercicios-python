@@ -16,3 +16,7 @@ class Task(models.Model):
       default=Priority.BAIXA
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return (f"{self.title} - prioridade: {self.priority} -\n"
+                f"{'completa' if self.completed else 'pendente'}")
