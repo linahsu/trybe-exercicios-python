@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Product(models.Model):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -10,9 +11,10 @@ class Product(models.Model):
     image = models.ImageField(
         upload_to="media/products", null=True, blank=True
     )
-    
+
     def __str__(self):
         return f'{self.name} - {self.price}'
-    
+
 # python3 -m pip install Pillow
-# Anota aí 📝: Pillow é um pacote Python que adiciona suporte para imagens ao Django. Ele é necessário para que possamos utilizar o campo ImageField.
+# Anota aí 📝: Pillow é um pacote Python que adiciona suporte para imagens ao
+# Django. Ele é necessário para que possamos utilizar o campo ImageField.

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Detalhes de uma receita
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{{recipe.name}}</h1>
+    {% if recipe.image %}
+        <img src="{ static recipe.image.url }" alt="Imagem da receita" height="80">
+    {% endif %}
+    <p>Criado: {{recipe.created_at|date}}</p>
+    <p>Última alteração: {{recipe.updated_at|date}}</p>
+</br>
+    <p><strong>Ingredientes:</strong>{{recipe.ingredients}}</p>
+    <p><strong>Mode de preparo:</strong>{{recipe.instructions}}</p>
+
+</div>
+
+{% endblock %}

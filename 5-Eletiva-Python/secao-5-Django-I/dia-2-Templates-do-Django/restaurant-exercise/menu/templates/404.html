@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  404 - Receita não encontrada
+{% endblock %}
+
+{% block content %}
+    <h1> Erro 404 </h1>
+    <p>Descukpe, esta receita não foi encontrada</p>
+    <p><a href="{% url 'home-page' %}">Volte para a página inicial</a></p>
+{% endblock %}
