@@ -1,5 +1,9 @@
 from django.shortcuts import render
+from menu.models import Recipe
 
 
 def index(request):
-    return render(request, 'home.html')
+    contexto = {
+        'recipes': Recipe.objects.all()
+    }
+    return render(request, 'home.html', contexto)
