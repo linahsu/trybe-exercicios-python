@@ -1467,49 +1467,243 @@ Você deve ter notado, também, que embora o formulário esteja lá, não temos 
 </br>
 
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Personalizando o formulário </strong></summary>
+
+O formulário renderizado no template ainda não está dentro do que é esperado. Os nomes que designam cada um dos campos ainda estão em inglês e, além disso, é necessário modificar os campos que são renderizados. Por exemplo, recorded_at, que representa uma data, está sendo renderizado como um campo de texto.
+
+Essas configurações podem ser feitas diretamente no formulário, no momento de se definir a classe. Podemos usar o parâmetro labels para indicar qual deverá ser o nome de cada um dos campos. Ainda, podemos usar o parâmetro initial para sugerir um dado inicial caso faça sentido para aquele campo. Veja como fica a implementação do formulário CreateMusicForm ao usarmos esses parâmetros:
 
 ```bash
+# playlists/forms.py
+
+from django import forms
+from playlists.validators import validate_music_length, validate_name
+
+
+class CreateMusicForm(forms.Form):
+    name = forms.CharField(
+        max_length=50,
+        validators=[validate_name],
+        label="Nome da música",
+    )
+    recorded_at = forms.DateField(
+        label="Data de gravação",
+        initial="2023-07-06",
+    )
+    length_in_seconds = forms.IntegerField(
+        validators=[validate_music_length],
+        label="Duração em segundos",
+    )
 ```
+
+De olho na dica 👀: também é possível usar o parâmetro help_text para indicar uma frase de auxílio no preenchimento do campo. Experimente!
+
+Colocar um valor inicial pode ajudar no preenchimento do campo, mas isso não necessariamente melhora a experiência da pessoa usuária. Contudo, é possível melhorar essa experiência modificando a aparência dos campos do formulário com um widget.
+
+Um widget nada mais é do que uma representação HTML mais elaborada de um campo input. Felizmente, o Django tem diversos widgets já implementados e prontos para serem usados. Além disso, ele também permite que você crie seus próprios widgets! 🤯
+
+Para usar um widget, basta passá-lo como parâmetro ao definir o campo, assim como é feito para o parâmetro label.
+
+Para fazer as melhores escolhas, é necessário conhecer os widgets disponíveis e você pode ver a lista completa de widgets nativos do Django na documentação oficial. Aqui, usaremos o DateInput():
 
 ```bash
+# playlists/forms.py
+
+from django import forms
+from playlists.validators import validate_music_length, validate_name
+
+
+class CreateMusicForm(forms.Form):
+    name = forms.CharField(
+        max_length=50,
+        validators=[validate_name],
+        label="Nome da música",
+    )
+    recorded_at = forms.DateField(
+        label="Data de gravação",
++         widget=forms.DateInput(attrs={"type": "date"}),
+        initial="2023-07-06",
+    )
+    length_in_seconds = forms.IntegerField(
+        validators=[validate_music_length],
+        label="Duração em segundos",
+    )
 ```
 
-```bash
-```
+De olho na dica 👀: o parâmetro attrs passado para o widget é usado para atribuir um conjunto chave: valor à tag que está sendo inserida no template. Nesse caso, definimos o tipo do input como data type: date, mas poderíamos, adicionalmente, definir uma classe: class: inputDate.
 
+Execute o servidor antes e depois da adição do novo widget. Essa implementação diminui a probabilidade de bugs relacionados à entrada de dados do tipo data, que precisam ser digitados em um formato específico. Além disso, ainda houve uma melhora na experiência de quem usa o formulário.
 
 </details>
 </br>
 
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Enviando dados do template para a view </strong></summary>
+
+Se você inspecionar o conteúdo HTML do formulário que está renderizado no template, verá que, apesar de chamarmos de formulário, não há tag form alguma. Isso é um problema, pois queremos enviar os dados inseridos para algum local, então vamos dar um jeito nisso!
+
+O primeiro passo é justamente envolver o formulário em uma tag form, indicando o método HTTP e ação que será realizada quando o formulário for submetido.
+
+Além disso, duas outras coisas são necessárias: adicionar uma tag input capaz de submeter o formulário (type: submit) e adicionar {% csrf_token %} logo após a tag form.
+
+A tag de template {% csrf_token %} é uma estratégia de segurança do framework contra Cross-site Request Forgery. Se quiser ler mais sobre esse tipo de ataque, visite esse site aqui.
 
 ```bash
+<!-- playlists/templates/music.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}
+    Formulário para Nova Música
+{% endblock %}
+
+{% block content %}
++    <form method="post" action="">
++        {% csrf_token %}
+        {{form.as_p}}
++        <input type="submit" value="Submeter formulário">
++    </form>
+{% endblock %}
 ```
+
+Neste ponto, você já deve ser capaz de submeter o formulário, contudo, esses dados não estão indo para lugar algum. É preciso indicar qual função da camada view receberá os dados submetidos pela requisição (request).
+
+O parâmetro request possui atributos e métodos. Todos os dados que são submetidos por meio de formulários podem ser visualizados no atributo POST, na forma de um dicionário. Entretanto, se os dados forem enviados no body da requisição, eles podem ser acessados no atributo body na forma de bytes. Além disso, também é possível identificar o método HTTP utilizado por meio do atributo method. Logo mais veremos isso na nossa aplicação!
+
+Adicione a tag de template {% url %} para invocar a rota musics-page no template music.html:
 
 ```bash
+<!-- playlists/templates/music.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}
+    Formulário para Nova Música
+{% endblock %}
+
+{% block content %}
++    <form method="post" action="{% url 'musics-page' %}">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="Submeter formulário">
+    </form>
+{% endblock %}
 ```
+
+Agora, ao submeter o formulário, você está enviando os dados submetidos para a função music que, por sua vez, renderiza novamente o template music.html.
+
+Para conseguir visualizar no terminal os dados que estão sendo submetidos e o body da requisição, adicione os prints abaixo à função music e refaça a submissão do formulário:
 
 ```bash
+# playlists/views.py
+
+from django.shortcuts import render
+from playlists.forms import CreateMusicForm
+
+
+def music(request):
++    print(request.POST)
++    print(request.body)
++    print(request.method)
+    form = CreateMusicForm()
+    context = {"form": form}
+    return render(request, "music.html", context)
 ```
 
+Parabéns, você conseguiu passar dados de um template para uma função da camada view! 🎉 O próximo passo é usar esse formulário para validar os dados enviados e, em seguida, criar um novo registro no banco!
+
+De olho na dica 👀: sempre que você quiser inspecionar métodos e atributos de uma variável, você pode usar o método dir, nativo do Python. Acrescente print(dir(request)) aos prints da função e veja o que é mostrado no terminal ao submeter o formulário.
 
 </details>
 </br>
 
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Criando o novo registro </strong></summary>
+
+Iremos implementar uma nova função chamada index, que recebe no contexto todos os objetos Music. Também iremos renderizar um novo template home.html, no qual serão colocados na tela todos os objetos criados e um link de redirecionamento para a função music.
+
+A implementação de ambos pode ser observada abaixo:
 
 ```bash
+# playlists/views.py
+
+# ...
+from playlists.models import Music
+
+
+def index(request):
+    context = {"musics": Music.objects.all()}
+    return render(request, "home.html", context)
+
+# ...
 ```
 
 ```bash
+<!-- playlists/templates/home.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}
+    Home Page
+{% endblock %}
+
+{% block content %}
+    {% for music in musics %}
+        <p>{{music}}</p>
+    {% endfor %}
+
+    <a href="{% url 'musics-page' %}">Criar nova música</a>
+{% endblock %}
 ```
+
+Registre a função index no arquivo urls.py:
 
 ```bash
+# playlists/urls.py
+
+from django.urls import path
++ from playlists.views import music, singer, index
+
+
+urlpatterns = [
++    path("", index, name="home-page"),
+    path("musics/", music, name="musics-page"),
+    path("singers/", singer, name="singers-page"),
+]
 ```
 
+Para finalizar o processo de criação, basta implementar a lógica da instanciação e validação de um formulário e, se os dados forem válidos, adicionar o novo registro no banco e redirecionar para o template inicial home.html. Usaremos o método redirect e passaremos como parâmetro a identificação da rota desejada: home-page.
+
+É preciso lembrar que esse processo completo só deve acontecer caso o método HTTP da requisição seja POST. Vale lembrar também que o próprio formulário passado como contexto para o template é capaz de ligar com erros, caso existam.
+
+Observe a implementação da função music:
+
+```bash
+# playlists/views.py
+
+from django.shortcuts import render, redirect
+from playlists.forms import CreateMusicForm, CreateSingerForm
+from playlists.models import Music
+
+
+def music(request):
+    form = CreateMusicForm()
+
+    if request.method == "POST":
+        form = CreateMusicForm(request.POST)
+
+        if form.is_valid():
+            Music.objects.create(**form.cleaned_data)
+            return redirect("home-page")
+
+    context = {"form": form}
+
+    return render(request, "music.html", context)
+```
+
+Agora sim! Você conseguiu criar um novo registro no banco de dados por meio de um formulário! 🎉
+
+Execute o servidor e veja funcionando! python3 manage.py runserver
 
 </details>
 </br>
