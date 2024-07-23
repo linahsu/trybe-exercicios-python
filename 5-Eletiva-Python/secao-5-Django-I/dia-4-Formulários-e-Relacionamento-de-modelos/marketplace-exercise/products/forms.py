@@ -7,7 +7,10 @@ class CreateProductForm(forms.Form):
         max_length=100,
         label="Nome do produto",
     )
-    description = forms.TextInput(label="Descrição do produto")
+    description = forms.CharField(
+        max_length=500,
+        label="Descrição",
+    )
     price = forms.FloatField(label="Preço R$:")
 
 
