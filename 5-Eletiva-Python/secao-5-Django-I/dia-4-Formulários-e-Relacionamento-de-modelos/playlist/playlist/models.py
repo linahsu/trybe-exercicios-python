@@ -1,8 +1,9 @@
 from django.db import models
+from playlist.validators import validate_music_length, validate_name_is_char
 
 
 class Singer(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, validators=[validate_name_is_char])
 
     def __str__(self):
         return self.name
@@ -21,7 +22,7 @@ class Playlist(models.Model):
 class Music(models.Model):
     name = models.CharField(max_length=50)
     recorded_at = models.DateField()
-    length_in_seconds = models.IntegerField()
+    length_in_seconds = models.IntegerField(validators=[validate_music_length])
 
     def __str__(self):
         return self.name

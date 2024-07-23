@@ -1240,17 +1240,84 @@ unbound_form.errors #  retorna {} Esse tipo de formulário não passa por valida
 </br>
 
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Criando validações personalizadas </strong></summary>
+
+É possível criar suas próprias funções de validação para os campos de um formulário, isso permite que você aplique a regra de negócio que quiser para validar um campo.
+
+Para trazer o exemplo prático, vamos considerar que a duração de uma música, length_in_seconds, precisa ser um número inteiro entre 1 e 3600 segundos. A função de validação precisa levantar uma exceção ValidationError, que será implementada no módulo django.core.exceptions e que receberá como parâmetro a mensagem de erro que será exibida caso a validação falhe.
+
+Crie um arquivo validators.py dentro da aplicação playlists e implemente uma função que faz a checagem se um número inteiro está entre 1 e 3600 segundos:
 
 ```bash
+# playlists/validators.py
+
+from django.core.exceptions import ValidationError
+
+
+def validate_music_length(value):
+    if value not in range(1, 3601):
+        raise ValidationError(
+            f"A duração da música deve ser um número"
+            f" inteiro entre 1 e 3600 segundos. O valor "
+            f"{value} não é válido."
+        )
+
 ```
+
+O próximo passo é indicar no campo do formulário que o dado recebido ali deve ser validado pela função criada, para além das validações padrão. Essa tarefa é feita por meio do parâmetro validators que recebe uma lista com todas as funções personalizadas para validação do campo. Veja abaixo:
 
 ```bash
+# playlists/forms.py
+
+from django import forms
++ from playlists.validators import validate_music_length
+
+
+class CreateMusicForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    recorded_at = forms.DateField()
++    length_in_seconds = forms.IntegerField(validators=[validate_music_length])
 ```
+
+Agora, se você tentar criar uma música com uma duração menor que 1 ou maior que 3600 segundos, o formulário não será considerado válido e a mensagem de erro será exibida. Veja o exemplo abaixo:
+
+Execute o código abaixo no terminal interativo do Django (python3 manage.py shell) ⚠️ Se você já estiver com um terminal interativo aberto, é necessário fechá-lo (exit()) e abrir um novo, pois, do contrário, as modificações feitas não serão consideradas.
 
 ```bash
+from playlists.forms import CreateMusicForm
+
+
+form = CreateMusicForm({"name":"The sound of silence", "recorded_at":"2023-07-05", "length_in_seconds":0}) # formulário instanciado com um dado inválido
+form.is_valid() # retorna False
+form.errors # retorna {'length_in_seconds': ['A duração da música deve ser um número inteiro entre 1 e 3600 segundos. O valor 0 não é válido.']}
 ```
 
+De olho na dica 👀: o Django possui uma série de validações prontas para serem usadas, você pode conferir a lista com as validações na documentação oficial.
+
+Além de indicar os validadores nos campos do formulário, também é possível indicar os validadores dentro do modelo da aplicação, utilizando o mesmo parâmetro (validators) na função que define cada campo.
+
+Entretanto, é importante dizer que, mesmo que você indique os validadores no modelo, eles não serão executados automaticamente e ainda será possível criar registros com dados que não passam nas validações desejadas. Por isso, indicar os validadores no modelo pode parecer inútil, mas acredite, isso trará benefícios quando explorarmos outros tipos de formulários. 😉
+
+Veja como fica o modelo com a validação:
+
+```bash
+# playlists/models.py
+
+from django.db import models
++ from playlists.validators import validate_music_length
+
+# ...
+
+class Music(models.Model):
+    name = models.CharField(max_length=50)
+    recorded_at = models.DateField()
++    length_in_seconds = models.IntegerField(validators=[validate_music_length])
+
+    def __str__(self):
+        return self.name
+```
+
+Relembrando 🧠: como foi feita uma modificação no modelo, lembre-se de criar as migrações e migrá-las para o banco de dados. Para isso, execute os comando: python3 manage.py makemigrationse python3 manage.py migrate.
 
 </details>
 </br>
