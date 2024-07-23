@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from playlist.forms import CreateMusicForm, CreateSingerForm
+from playlist.forms import CreateSingerForm, CreateMusicModelForm
 from playlist.models import Music, Singer
 
 
@@ -7,10 +7,10 @@ def music(request):
     # print(request.POST)
     # print(request.body)
     # print(request.method)
-    form = CreateMusicForm()
+    form = CreateMusicModelForm()
 
     if request.method == "POST":
-        form = CreateMusicForm(request.POST)
+        form = CreateMusicModelForm(request.POST)
 
         if form.is_valid():
             Music.objects.create(**form.cleaned_data)

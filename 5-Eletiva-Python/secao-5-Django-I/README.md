@@ -1708,6 +1708,298 @@ Execute o servidor e veja funcionando! python3 manage.py runserver
 </details>
 </br>
 
+## Formulários de modelos (ModelForm)
+
+Pode até ser que você já tivesse se questionado quanto à isso, mas imagine: você tem um modelo que tem 10 atributos necessários para a criação de um novo registro, você precisaria fazer a implementação de cada um desses atributos no modelo e depois “repetir” todos os atributos no formulário de criação. Isso não parece muito eficiente, e se fossem 20, 30 ou 50 atributos? 😵‍💫
+
+O ModelForm tem em sua implementação uma maneira para lidar com esse tipo de problema que foi mencionado. Ele é um formulário que usa como base um modelo já criado, no qual você pode explicitar os campos que deseja que apareçam para a pessoa usuária.
+
+<details>
+<summary><strong> ModelForm na prática </strong></summary>
+
+Usando como base o projeto construído até aqui, você vai implementar o primeiro ModelForm que será usado para a criação de novos registros de Music. Comece uma nova classe com o nome CreateMusicModelForm e faça a herança de form.ModelForm. Além disso, para fazer esse formulário funcionar corretamente, será necessário implementar a classe Meta dentro da classe CreateMusicModelForm (Isso mesmo, uma classe dentro da outra 🤯) e nessa segunda classe implementar os atributos: model, fields, labels e widgets.
+
+* O atributo model é usado para indicar o modelo que será usado como base, e recebe o nome da classe do modelo.
+* O atributo fields pode receber a string __all__ ou uma lista com os nomes dos atributos do modelo que você deseja que apareçam no formulário, sendo que a primeira opção faz com que todos os atributos apareçam.
+* O atributo labels recebe um dicionário onde as chaves são os atributos do modelo e os valores são suas respectivas labels personalizadas.
+* O atributo widgets recebe um dicionário onde as chaves são os atributos do modelo e os valores são os respectivos widgets que serão visualizados. É no campo de widgets que você pode personalizar um valor inicial para o atributo do modelo.
+
+Veja a implementação como fica:
+
+```bash
+# playlists/forms.py
+from playlists.models import Music
+
+# ...
+
+class CreateMusicModelForm(forms.ModelForm):
+    class Meta:
+        model = Music
+        fields = "__all__"
+        labels = {
+            "name": "Nome da música",
+            "recorded_at": "Data de gravação",
+            "length_in_seconds": "Duração em segundos",
+        }
+        widgets = {
+            "recorded_at": forms.DateInput(
+                attrs={"type": "date", "value": "2023-07-06"}
+            )
+        }
+```
+
+Com o novo formulário implementado basta fazer a substituição na função create_music dentro do arquivo views.py.
+
+```bash
+# playlists/views.py
+def create_music(request):
+    # form = CreateMusicForm()
+    form = CreateMusicModelForm()
+
+    if request.method == "POST":
+        # form = CreateMusicForm(request.POST)
+        form = CreateMusicModelForm(request.POST)
+
+        if form.is_valid():
+            Music.objects.create(**form.cleaned_data)
+            return redirect("home-page")
+
+    context = {"form": form}
+
+    return render(request, "index.html", context)
+```
+
+Você verá que o formulário já estará funcionando 🤩, inclusive, as validações. Se lembra de quando foi falado que seria útil indicar validações para o campo no próprio modelo? Pois é, esse momento é agora. O ModelForm já estrutura seus campos inserindo as validações. Tente criar uma música com duração maior que 3600 e verá a mensagem na tela.
+
+Agora sim! O ModelForm está idêntico ao Form construído anteriormente. É importante retomar o ponto que não há implementação certa ou errada nesse cenário, tudo depende da aplicação que será construída. Por exemplo, se os nomes padrões fossem bons o suficiente para a aplicação, seguir com a implementação da ModelForm seria mais interessante e pouparia algumas linhas de código na aplicação.
+
+</details>
+</br>
+
+## Relacionamento de Modelos
+
+<details>
+<summary><strong> Relacionamento 1 para N </strong></summary>
+
+Refletindo sobre os modelos acima, é possível perceber que essa relação se encaixa bem com os modelos Singer <1:N> Music, dado que uma mesma pessoa cantora pode ter várias músicas, certo?.
+
+Ao se analisar a implementação dos modelos acima, se nota que nenhum dos campos descritos é uma chave primária. Quando não criamos esse campo explicitamente o Django, automaticamente, cria uma nova coluna para cada modelo, chamada id, que será a chave primária, caso algum dos campos seja designado como chave primária (primary_key = True), o Django não criará a coluna id.
+
+Para criar o relacionamento entre os modelos Singer e Music, será utilizado o campo models.ForeignKey no modelo Music, onde será implementado que uma música pode possuir apenas uma pessoa cantora. Dessa forma, se N músicas diferentes referenciam a mesma pessoa cantora, podemos notar a relação Singer <1:N> Music.
+
+No campo models.ForeignKey será necessário passar o modelo a ser referenciado e logo em seguida outros dois parâmetros: on_delete, que define o que acontecerá com os registros que estão associados ao registro que está sendo excluído e related_name, que será um atributo do modelo referenciado para permitir o acesso no sentido inverso do relacionamento.
+
+Além disso, se existirem registros no banco de dados, será necessário definir um valor padrão para que as colunas adicionais sejam preenchidas. Algumas estratégias que podem ser usadas:
+
+* Criar um objeto que representará o valor padrão e passar seu id como valor padrão. (Usaremos essa aqui)
+* Permitir que a coluna seja nula e, posteriormente, preencher os valores.
+* Ou caso ainda esteja em fase de desenvolvimento, apagar o banco e as migrações e criar tudo novamente.
+
+Crie um objeto do tipo Singer usando o terminal interativo do Django python3 manage.py shell:
+
+```bash
+from playlists.models import Singer
+
+
+default = Singer.objects.create(name="Pessoa desconhecida")  # Retorna o objeto criado <Singer: Pessoa desconhecida>
+
+default.id # Retorna o id do objeto criado, 2, por exemplo
+```
+
+Agora, veja como fica a classe Music com o relacionamento:
+
+```bash
+# playlists/models.py
+from django.db import models
+from playlists.validators import validate_music_length,
+
+
+class Music(models.Model):
+    name = models.CharField(max_length=50)
+    recorded_at = models.DateField()
+    length_in_seconds = models.IntegerField(validators=[validate_music_length])
+    singer = models.ForeignKey(
+        Singer,
+        on_delete=models.CASCADE,
+        related_name="musics",
+        default=2, # Se não houver o objeto com esse id em seu banco você terá um erro ao criar um objeto Music
+    )
+
+    def __str__(self):
+        return self.name
+```
+
+De olho na dica 👀: Para o parâmetro on_delete existem algumas opções de valor já implementadas pelo Django dentro de models. Você encontra essas opções na documentação oficial.
+
+Com a implementação acima, o modelo Music referencia o modelo Singer. Já que modificamos o modelo é necessário aplicar as migrações para o banco python3 manage.py makemigrations e python3 manage.py migrate.
+
+Na prática, será criada uma coluna adicional na tabela music com o nome singer_id que armazenará a chave primária do registro da tabela singer que está sendo referenciado, independentemente se essa chave primária é um id ou não. Além disso, foi usada a configuração on_delete=models.CASCADE, indicando que, caso o registro da tabela singer seja excluído, todos os registros da tabela music que possuem o singer_id igual ao id do registro excluído, também serão excluídos.
+
+Um ponto importante a ser observado é que o atributo singer da classe Music precisa receber um objeto do tipo Singer para ser criado e não um id ou qualquer outra chave primária. O ORM do Django se encarrega da tarefa de, a partir do objeto Singer, escrever a chave primária no banco de dados e, ao fazer o resgate do banco, resgatar o objeto singer a partir do id registrado no banco.
+
+Na prática, através de um objeto Music podemos acessar o objeto Singer através do atributo singer. Já através de um objeto Singer, podemos acessar todos os objetos Music associados à ele através do atributo musics, definido em related_name do relacionamento e, em seguida, usando o método all().
+
+Observe o exemplo abaixo do relacionamento 1:N para entender melhor essa relação:
+
+```bash
+from playlists.models import Music, Singer
+
+corey = Singer.objects.create(name="Corey Taylor") # cria objeto Singer com id = 1 e salva em corey
+
+music_1 = Music.objects.create(name="Snuff", recorded_at="2008-06-17", length_in_seconds=270, singer=corey) # cria objeto Music com id = 1 e salva em music_1
+
+music_2 = Music.objects.create(name="Through Glass", recorded_at="2006-07-01", length_in_seconds=240, singer=corey) # cria objeto Music com id = 2 e salva em music_2
+
+music_1.singer # retorna o objeto Singer associado ao objeto Music music_1
+# saída: <Singer: Corey Taylor>
+
+music_2.singer # retorna o objeto Singer associado ao objeto Music music_2
+# saída: <Singer: Corey Taylor>
+
+corey.musics.all() # retorna todos os objetos Music associados ao objeto Singer corey
+# saída: <QuerySet [<Music: Snuff>, <Music: Through Glass>]>
+```
+
+</details>
+</br>
+
+<details>
+<summary><strong> Relacionamento N para N </strong></summary>
+
+O relacionamento N para N representa uma relação onde um registro de uma tabela pode estar associado a vários registros de outra tabela e vice-versa. No caso aqui, podemos fazer transpor essa relação para os modelos Music e Playlist, dado que uma música pode estar em várias playlists e uma playlist pode ter várias músicas.
+
+Para implementar esse relacionamento no Django, será usado o campo models.ManyToManyField, que recebe o modelo a ser referenciado e o parâmetro related_name, com o mesmo intuito anterior, ser possível fazer o acesso reverso ao modelo que está sendo referenciado.
+
+```bash
+# playlists/models.py
+class Playlist(models.Model):
+    name = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    musics = models.ManyToManyField("Music", related_name="playlists")
+
+    def __str__(self):
+        return self.name
+```
+
+O único motivo pelo qual o modelo Music se encontra entre aspas, como se fosse uma string, no parâmetro models.ManyToManyField é que, no momento da criação do modelo Playlist, o modelo Music ainda não foi declarado. Dessa forma, o Django busca pelo modelo Music apenas depois que todos os modelos forem declarados.
+
+No Django, quando um relacionamento N:N é criado, o atributo responsável por esse relacionamento se torna uma espécie de set que pode receber objetos do tipo do modelo referenciado. Assim, é possível adicionar, usando o método add(), ou remover, usando o método remove() objetos do atributo de relacionamento.
+
+Uma vez que uma música é adicionada à uma playlist, é preciso salvar novamente a playlist para que as atualizações sejam refletidas no banco de dados. Por essa razão, pode-se implementar métodos que encapsulam essa lógica e facilitam o gerenciamento dos objetos. Observe:
+
+```bash
+# playlists/models.py
+from django.db import models
+
+
+class Playlist(models.Model):
+    name = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    musics = models.ManyToManyField("Music", related_name="playlists")
+
+    def add_music(self, music):
+        self.musics.add(music)
+        self.save()
+    
+    def remove_music(self, music):
+        self.musics.remove(music)
+        self.save()
+
+    def __str__(self):
+        return self.name
+```
+
+Assim, todos os objetos do tipo Playlist serão capazes de usar os métodos add_music() e remove_music() que facilitam a adição e remoção de músicas de uma playlist. Para conseguir visualizar todas as músicas de uma playlist, basta acessar o atributo musics do objeto Playlist e, em seguida, usar o método all(). Já, se o intuito é visualizar todas as playlists que uma música está associada, basta acessar o atributo playlists do objeto Music, também definido em related_name do relacionamento e, em seguida, usar o método all().
+
+Novamente, foram feitas alterações nos modelos e para que sejam observadas no banco, é preciso criar e executar as migrações python3 manage.py makemigrations e python3 manage.py migrate. Observe o exemplo abaixo do relacionamento N:N para entender melhor essa relação:
+
+```bash
+from playlists.models import Music, Playlist
+
+music_1 = Music.objects.get(id=1) # retorna objeto Music com id = 1 e salva em music_1
+
+music_2 = Music.objects.get(id=2) # cria objeto Music com id = 2 e salva em music_2
+
+playlist_1 = Playlist.objects.create(name="Codando na Paz", is_active=True) # cria objeto Playlist com id = 1 e salva em playlist_1
+
+playlist_2 = Playlist.objects.create(name="Bora Treinar", is_active=True) # cria objeto Playlist com id = 2 e salva em playlist_2
+
+playlist_1.musics.all() # retorna todos os objetos Music associados ao objeto Playlist
+# saída: <QuerySet []>
+
+playlist_2.musics.all() # retorna todos os objetos Music associados ao objeto Playlist
+# saída: <QuerySet []>
+
+playlist_1.add_music(music_1) # adiciona objeto Music music_1 ao objeto Playlist
+
+playlist_1.musics.all() # retorna todos os objetos Music associados ao objeto Playlist
+# saída: <QuerySet [<Music: Snuff>]>
+
+playlist_2.add_music(music_1) # adiciona objeto Music music_1 ao objeto Playlist
+
+playlist_2.musics.all() # retorna todos os objetos Music associados ao objeto Playlist
+# saída: <QuerySet [<Music: Snuff>]>
+
+playlist_2.add_music(music_2) # adiciona objeto Music music_2 ao objeto Playlist
+
+playlist_2.musics.all() # retorna todos os objetos Music associados ao objeto Playlist
+# saída: <QuerySet [<Music: Snuff>, <Music: Through Glass>]>
+
+music_1.playlists.all() # retorna todos os objetos Playlist associados ao objeto Music
+# saída: <QuerySet [<Playlist: Codando na Paz>, <Playlist: Bora Treinar>]>
+
+music_2.playlists.all() # retorna todos os objetos Playlist associados ao objeto Music
+# saída: <QuerySet [<Playlist: Bora Treinar>]>
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong> Como ficam os formulários agora? </strong></summary>
+
+Na última implementação realizada dos formulários, foi utilizada a classe ModelForm que, automaticamente, cria os campos do formulário com base nos campos do modelo. Você chegou a visualizar como ficou o formulário depois que as alterações de relacionamento foram feitas?
+
+O nome que designa o novo campo ainda não foi personalizado mas, sem alterar nada da implementação do formulário, temos um novo campo funcional que já resgata todos os objetos do tipo Singer do banco e coloca na lista de seleção.
+
+Caso houvesse a intenção de mostrar apenas alguns dos objetos Singer, seria possível personalizar o widget do campo singers para que ele fosse um form.Select passando o parâmetro choices com o valor de uma lista de tuplas, onde cada tupla contém, respectivamente, o valor a ser submetido no formulário e o valor exibido para a pessoa usuária. Observe:
+
+```bash
+# music/forms.py
+class CreateMusicModelForm(forms.ModelForm):
+    class Meta:
+        model = Music
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].label = "Nome da música"
+        self.fields["recorded_at"].label = "Data de gravação"
+        self.fields["recorded_at"].widget = forms.DateInput(
+                attrs={"type": "date"})
+        self.fields["recorded_at"].initial = "2023-07-06"
+        self.fields["length_in_seconds"].label = "Duração em segundos"
+        self.fields["singer"].label = "Artista"
+        self.fields["singer"].widget = forms.Select(
+            choices=[
+                (singer.id, singer.name)
+                for singer in Singer.objects.filter(name__contains="a")
+            ]
+        )
+```
+
+Com a modificação acima, o campo singer do formulário passa a exibir os nomes dos objetos Singer que possuem a letra “a” no nome, entretanto, ao submeter o formulário não será o nome do objeto que será passado adiante, mas sim o seu id.
+
+Execute o servidor e veja as alterações feitas em funcionamento: python3 manage.py runserver e acesse localhost:8000/musics.
+
+</details>
+</br>
+
 <details>
 <summary><strong>  </strong></summary>
 
