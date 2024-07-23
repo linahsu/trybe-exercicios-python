@@ -1123,6 +1123,122 @@ Você pode fazer o download dos templates estilizados: base.html e home.html. Ne
 </details>
 </br>
 
+## Formulários no Django
+
+No Django, existe uma classe que permite que você consiga receber e validar dados de uma maneira rápida e prática. Essa é a classe Form, que está implementada no módulo django.forms.
+
+Em resumo, um formulário pode ser criado para receber e validar dados que chegarão em uma requisição. Isso possibilita a criação ou atualização de registros no banco de dados de forma mais confiável.
+
+<details>
+<summary><strong> Criando um formulário </strong></summary>
+
+Quando pensamos em criar um formulário, a primeira coisa a se fazer é definir qual será seu propósito. Como ele se encaixa na lógica da aplicação que estamos desenvolvendo para conseguirmos delimitar o que ele irá conter.
+
+iniciaremos construindo um formulário cujo propósito é adicionar novas músicas ao banco.
+
+Para isso, crie um arquivo forms.py dentro da aplicação playlists. É nesse arquivo que serão construídos os formulários da aplicação. Depois de criado, adicione o seguinte código:
+
+```bash
+# playlists/forms.py
+from django import forms
+
+
+class CreateMusicForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    recorded_at = forms.DateField()
+    length_in_seconds = forms.IntegerField()
+```
+
+Percebeu que os atributos do formulário que criamos têm praticamente a mesma sintaxe dos que foram criados no modelo Music?
+
+Isso acontece porque para criar um novo registro na tabela music é obrigatório fornecer os três campos. Já para o modelo Playlist, por exemplo, os campos created_at e updated_at não precisam ser passados, então não precisamos desses campos:
+
+```bash
+# playlists/forms.py
+from django import forms
+
+
+class CreateMusicForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    recorded_at = forms.DateField()
+    length_in_seconds = forms.IntegerField()
+
+
++ class CreatePlaylistForm(forms.Form):
++     name = forms.CharField(max_length=50)
++     is_active = forms.BooleanField()
+```
+
+Uma grande vantagem de se usar um formulário é a maneira eficaz que ele proporciona a validação dos dados em cada campo.
+
+Observe: o atributo name = forms.CharField(max_length=50) indica que o formulário deve ter uma entrada name do tipo String com no máximo 50 caracteres. Por outro lado, o atributo duration_in_seconds = forms.IntegerField() indica que o formulário deve ter uma entrada duration_in_seconds cujo valor correspondente deve ser do tipo inteiro.
+
+</details>
+</br>
+
+<details>
+<summary><strong> Formulários vinculados vs não vinculados </strong></summary>
+
+Para o Django, formulários podem ser classificados como vinculados ou não vinculados.
+
+Um formulário é considerado como não vinculado caso seja instanciado sem nenhum dado, caso contrário, ele é vinculado. A própria classe Form apresenta um atributo is_bound que indica se o formulário é vinculado ou não. Observe o exemplo abaixo:
+
+```bash
+from playlists.forms import CreatePlaylistForm
+
+
+form = CreatePlaylistForm()
+form.is_bound # retorna False
+
+form = CreatePlaylistForm({"name":"Playlist de Estudo", "is_active": True})
+form.is_bound # retorna True
+```
+
+De olho na dica 👀: qualquer dicionário passado como parâmetro já faz com que o formulário seja considerado como vinculado.
+
+E afinal, qual a diferença? 🤔
+
+Formulários vinculados podem validar os dados passados por parâmetro. Já formulários não vinculados não podem fazer isso. Veremos sobre isso a seguir!
+
+</details>
+</br>
+
+</details>
+</br>
+
+<details>
+<summary><strong> Validação de dados </strong></summary>
+
+A classe Form implementa o método is_valid(), que retorna um booleano para informar se os dados do formulários são válidos ou não.
+
+Além disso, a classe Form também implementa o atributo errors que retorna um dicionário com os erros de validação de cada campo do formulário. Veja o exemplo abaixo:
+
+```bash
+from playlists.forms import CreatePlaylistForm
+
+form = CreatePlaylistForm({}) # formulário instanciado com um dicionário vazio
+form.is_valid() # retorna False
+form.errors # retorna {'name': ['Este campo é obrigatório.'], 'is_active': ['Este campo é obrigatório.']}
+
+form_2 = CreatePlaylistForm({"name":"Essa playlist tem um nome com mais de cinquenta caracteres, o que você acha que vai acontecer?", "is_active": True})
+form_2.is_valid() # retorna False
+form_2.errors # retorna {'name': ['Certifique-se de que o valor tenha no máximo 50 caracteres (ele possui 94).']}
+
+form_3 = CreatePlaylistForm({"name":"Playlist de Estudo", "is_active": True})
+form_3.is_valid() # retorna True
+form_3.errors # retorna {}
+
+unbound_form = CreatePlaylistForm() #  formulário não vinculado
+unbound_form.is_valid() #  retorna False
+unbound_form.errors #  retorna {} Esse tipo de formulário não passa por validação
+```
+
+</details>
+</br>
+
+</details>
+</br>
+
 <details>
 <summary><strong>  </strong></summary>
 
@@ -1135,6 +1251,28 @@ Você pode fazer o download dos templates estilizados: base.html e home.html. Ne
 ```bash
 ```
 
+
+</details>
+</br>
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
 
 </details>
 </br>
