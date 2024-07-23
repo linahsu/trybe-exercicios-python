@@ -15,11 +15,11 @@ class Playlist(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     musics = models.ManyToManyField("Music", related_name="playlists")
-    
+
     def add_music(self, music):
         self.musics.add(music)
         self.save()
-        
+
     def remove_music(self, music):
         self.musics.remove(music)
         self.save()
