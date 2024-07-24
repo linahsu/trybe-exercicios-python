@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Home Page
+{% endblock %}
+
+{% block content %}
+    <h1>Cadastros do Marketplace</h1>
+    <p><a href="{% url 'products-page' %}">Produto</a></p>
+    <p><a href="{% url 'sellers-page' %}">Vendedor</a></p>
+    <p><a href="{% url 'buyers-page' %}">Comprador</a></p>
+    <p><a href="{% url 'orders-page' %}">Pedido</a></p>
+{% endblock %}
