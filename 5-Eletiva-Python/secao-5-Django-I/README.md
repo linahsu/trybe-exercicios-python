@@ -2015,37 +2015,96 @@ A documentação oficial do DRF recomenda a instalação de algumas outras depen
 pip install markdown django-filter mysqlclient
 ```
 
-</details>
-</br>
-
-<details>
-<summary><strong>  </strong></summary>
-
-```bash
-```
-
-```bash
-```
-
-```bash
-```
-
+* Criação do projeto e app, instalação do app no settings
+* Configuração do banco de dados
+* Migrações
+* Criação do super usuário e fazer o login
 
 </details>
 </br>
 
+## Primeiros passos com DRF - Models
+
+O ponto de partida será incluir o rest-framework no projeto. Uma vez que ele já está instalado no ambiente virtual, basta adicioná-lo à variável INSTALLED_APPS, no arquivo playlistify.settings.py do projeto:
+
+```bash
+# ...
+"core",
++ "rest_framework",
+```
+
+A partir disso, o Django já reconhece o DRF e podemos começar a utilizá-lo.
+
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Models </strong></summary>
+
+Em seguida, é preciso que os modelos da API sejam definidos. Como dito anteriormente, nossa API será construída para o gerenciamento de playlists e por isso, utilizaremos os mesmos três modelos do dia sobre Formulários com Django, que são: Singer, Playlist e Music, de forma que o arquivo core/models.py ficará como a seguir:
 
 ```bash
+from django.db import models
+
+
+class Singer(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class Music(models.Model):
+    name = models.CharField(max_length=50)
+    recorded_at = models.DateField()
+    length_in_seconds = models.IntegerField()
+    singer = models.ForeignKey(Singer, on_delete=models.CASCADE, related_name="musics")
+
+    def __str__(self):
+        return self.name
+
+
+class Playlist(models.Model):
+    name = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    musics = models.ManyToManyField("Music", related_name="playlists")
+
+    def add_music(self, music):
+        self.musics.add(music)
+        self.save()
+
+    def remove_music(self, music):
+        self.musics.remove(music)
+        self.save()
+
+    def __str__(self):
+        return self.name
 ```
+
+Relembrando 🧠: O relacionamento entre os modelos Singer e Music é <1:N>, pois uma música pode pertencer a apenas uma pessoa artista, mas cada artista pode ter várias músicas. Enquanto isso, o relacionamento entre Musice Playlist é de <N:N>, dado que uma música pode estar em várias playlists e uma playlist pode ter várias músicas.
+
+Com os modelos definidos, podemos parar o servidor com o atalho ctrl+ c e logo em seguida criar as migrations e aplicá-las ao banco de dados com os comandos:
 
 ```bash
+python3 manage.py makemigrations
+python3 manage.py migrate
 ```
+
+</details>
+</br>
+
+<details>
+<summary><strong> Registrando os models no admin </strong></summary>
+
+Ainda não registramos os modelos no arquivo core/admin.py. É isso que faremos agora:
 
 ```bash
-```
+from django.contrib import admin
+from .models import Singer, Music, Playlist
 
+admin.site.register(Singer)
+admin.site.register(Music)
+admin.site.register(Playlist)
+```
 
 </details>
 </br>
