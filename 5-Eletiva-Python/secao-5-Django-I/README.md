@@ -2000,6 +2000,72 @@ Execute o servidor e veja as alterações feitas em funcionamento: python3 manag
 </details>
 </br>
 
+# DRF - Django Rest Framework
+
+<details>
+<summary><strong> Instalações </strong></summary>
+
+```bash
+pip install django djangorestframework
+```
+
+A documentação oficial do DRF recomenda a instalação de algumas outras dependências para serem utilizadas no desenvolvimento de APIs com esse framework. Hoje, utilizaremos duas delas: o markdown e o django-filter, além do mysqlclient que nos permitirá utilizar o MySQL como banco de dados. Para instalá-los, basta executar:
+
+```bash
+pip install markdown django-filter mysqlclient
+```
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
 <details>
 <summary><strong>  </strong></summary>
 
