@@ -2253,19 +2253,3 @@ De olho na dica 👀: Para fazer requisições a rotas do tipo POST, PUT e DELET
 
 </details>
 </br>
-
-<details>
-<summary><strong>  </strong></summary>
-
-```bash
-```
-
-```bash
-```
-
-```bash
-```
-
-
-</details>
-</br>
