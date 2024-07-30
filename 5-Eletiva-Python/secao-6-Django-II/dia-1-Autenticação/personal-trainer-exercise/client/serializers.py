@@ -30,7 +30,9 @@ class ClientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Client
-        fields = ["id", "name", "address", "created_at"]
+        fields = [
+            "id", "name", "address", "created_at", "workout_plan", "personal"
+        ]
 
     def create(self, validated_data):
         current_personal = self.context['request'].personal

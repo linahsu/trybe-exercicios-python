@@ -9,7 +9,7 @@ class Client(models.Model):
     personal_trainer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="workout_plan"
+        related_name="client",
     )
 
     def __str__(self):
