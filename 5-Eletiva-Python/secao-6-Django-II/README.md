@@ -623,21 +623,166 @@ Agora faça uma requisição para obter o casamento de uma pessoa usuária sem a
 </details>
 </br>
 
+# SimpleJWT
+
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Instalar, rotear, configurar e pronto! </strong></summary>
+
+Todas as técnicas que foram ensinadas até agora podem ser usadas no Django, contudo, você precisará implementar toda a lógica dessas autenticações por sua conta. As autenticações BasicAuthentication e TokenAuthentication que usamos são implementadas no Django REST Framework. A Simple JWT não: ela vem de um plugin do Django REST Framework. Entretanto, ela é poderosa e implementável em pouquíssimos passos.
+
+### Segurança
+
+#### Autenticação por Token
+Oferece melhor segurança, pois os tokens podem ter prazos curtos e ser revogados facilmente. Os tokens também podem ser emitidos com permissões específicas.
+
+#### Autenticação Básica
+Menos seguro, pois as credenciais (nome de usuário/senha) são enviadas com cada requisição e podem ser interceptadas. As credenciais também são armazenadas no servidor, representando um risco potencial caso o servidor seja comprometido.
+
+#### Simple JWT
+Oferece segurança avançada, geração automática de tokens JWT e suporte a tokens de atualização. Os tokens podem ter tempo de vida configurável e podem ser revogados. Possui integração simples com o Django REST Framework.
+
+### Ausência de Estado
+
+#### Autenticação por Token
+Stateless, não requer armazenamento de sessão no servidor, o que reduz a carga no servidor.
+
+#### Autenticação Básica
+Stateless, não requer armazenamento de sessão no servidor, o que reduz a carga no servidor.
+
+#### Simple JWT
+Stateless, não requer armazenamento de sessão no servidor, o que reduz a carga no servidor.
+
+### Complexidade de Implementação
+
+#### Autenticação por Token
+Mais complexo de implementar em comparação com a Autenticação Básica, pois requer a geração e manipulação de tokens no lado do servidor, além de lidar com a expiração e revogação de tokens.
+
+#### Autenticação Básica
+Mais fácil de implementar, pois envolve apenas a verificação das credenciais em cada requisição. Nenhuma geração ou manipulação de token é necessária.
+
+#### Simple JWT
+Mais complexo que a Autenticação Básica, mas oferece biblioteca completa para lidar com a geração, manipulação e renovação de tokens JWT. Requer configurações adicionais, mas proporciona mais recursos e flexibilidade.
+
+Para trocar nossa TokenAuthentication por SimpleJWT, siga os passos adiante. Primeiro, instale o módulo abaixo:
 
 ```bash
+pip install djangorestframework-simplejwt
 ```
+A seguir, ajuste as configurações, substituindo a autenticação padrão de TokenAuthentication por JWTAuthentication
 
 ```bash
+# marryme/settings.py
+
+INSTALLED_APPS = [
+    # ...
+    'rest_framework',
+-   'rest_framework.authtoken',
++   'rest_framework_simplejwt',
+    # ...
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+-       'rest_framework.authentication.TokenAuthentication',
++       'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    # Outras configurações do DRF ...
+}
 ```
+
+A seguir, ajuste as suas rotas:
 
 ```bash
+# marryme/urls.py
+
+
+from django.urls import path, include
+- from rest_framework.authtoken.views import obtain_auth_token
++ from rest_framework_simplejwt.views import (TokenObtainPairView,
++                                             TokenRefreshView,
++                                             TokenVerifyView)
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+-   path('login/', obtain_auth_token, name='login'),
++   path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
++   path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
++   path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('', include('budget.urls')),
+]
 ```
 
+Como definimos a autenticação JWT como padrão no arquivo settings.py podemos remover a variável authentication_classes nas views. Isso fará com que o simple JWT seja o padrão para toda aplicação. Caso você não defina uma configuração padrão de autenticação e permissão, você precisará indicar com authentication_classes e permission_classes quais serão essas configurações, caso contrário, não haverá autenticação e todas as pessoas terão as permissões.
+
+```bash
+from rest_framework import viewsets
+from .models import Vendor, Marriage, Budget
+- from rest_framework.authentication import TokenAuthentication
+from .serializers import (AdminVendorSerializer,
+                          VendorSerializer,
+                          MarriageSerializer,
+                          BudgetSerializer)
+from .permissions import IsOwnerOrAdmin
+
+
+class VendorViewSet(viewsets.ModelViewSet):
+    queryset = Vendor.objects.all()
+    serializer_class = AdminVendorSerializer
+-   authentication_classes = [TokenAuthentication]
+
+    def get_serializer_class(self):
+        if self.action in ("create", "destroy", "update"):
+            return AdminVendorSerializer
+        return VendorSerializer
+
+
+
+
+class MarriageViewSet(viewsets.ModelViewSet):
+    queryset = Marriage.objects.all()
+    serializer_class = MarriageSerializer
+-   authentication_classes = [TokenAuthentication]
+    permission_classes = [IsOwnerOrAdmin]
+
+def get_queryset(self):
+    if self.request.user.is_superuser:
+        return Marriage.objects.all()
+    else:
+        return Marriage.objects.filter(user=self.request.user)
+
+
+class BudgetViewSet(viewsets.ModelViewSet):
+    queryset = Budget.objects.all()
+    serializer_class = BudgetSerializer
+-   authentication_classes = [TokenAuthentication]
+    permission_classes = [IsOwnerOrAdmin]
+
+def get_queryset(self):
+    if self.request.user.is_superuser:
+        return Budget.objects.all()
+    else:
+        return Budget.objects.filter(user=self.request.user)
+```
+
+E tudo já deve funcionar! Faça, primeiro, uma requisição com as credenciais para /token/:
+
+```bash
+// POST /token/
+
+{
+  "username": "SeuUser",
+  "password": "SuaSenha"
+}
+
+```
+
+Você receberá duas tokens: uma na chave access e outra na chave refresh. Para testar, copie a da chave access para o cabeçalho da requisição com a chave Authorization e o valor Bearer SeuToken. Faça os testes de acesso a rotas protegidas para ver que tudo continua funcionando! Para além disso, o endpoint token/verify/ que criamos recebe no corpo da requisição a chave token com uma de suas tokens e retorna 200 OK se elas forem válidas, e 401 UNAUTHORIZED caso contrário. No endpoint /token/refresh/, você envia sua token da chave refresh e recebe uma nova token access, podendo gerar novas tokens sem precisar usar suas credenciais mais do que uma vez!
 
 </details>
 </br>
+
+Qual autenticação devo usar?!
+Lembre-se: não existe bala de prata. Não existe tecnologia infalível ou melhor em 100% dos contextos. Dito isso, uma regra geral boa de se adotar é: se usar o Django REST Framework, use Simple JWT - é a opção mais completa, mais segura e, em função do que o framework fornece, a mais fácil de implementar. Caso use somente o Django comum, use TokenAuthentication. Caso precise somente de algo realmente simples o BasicAuthentication quebra um galho.
 
 <details>
 <summary><strong>  </strong></summary>
