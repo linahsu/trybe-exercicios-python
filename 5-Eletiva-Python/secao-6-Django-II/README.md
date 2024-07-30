@@ -460,6 +460,169 @@ Por outro lado, o admin terá acesso a todos os casamentos e orçamentos. Com es
 </details>
 </br>
 
+# Token Authentication
+
+<details>
+<summary><strong> Permitindo a quem usa obter Tokens </strong></summary>
+
+A autenticação básica é excelente por ser bem simples de implementar - você coloca as credenciais no cabeçalho da requisição e pronto! Além disso, ela carrega a vantagem de não exigir nenhum armazenamento ou gerenciamento de dados por parte do servidor - ele só precisa saber autenticar uma pessoa de acordo com suas credenciais. Mas há desvantagens também: as credenciais são enviadas no cabeçalho de toda requisição - uma interceptação de dados pode comprometê-las.
+
+A autenticação por token requer um pouco mais de gerenciamento por parte do servidor - o gerenciamento das tokens - mas é mais segura - as credenciais só são enviadas para se obter uma token, e esta pode ser revogada com facilidade. 
+
+### Segurança
+
+#### Autenticação por Token
+Oferece melhor segurança, pois os tokens podem ter prazos curtos e ser revogados facilmente. Os tokens também podem ser emitidos com permissões específicas.
+
+#### Autenticação Básica
+Menos seguro, pois as credenciais (nome de usuário/senha) são enviadas com cada requisição e podem ser interceptadas. As credenciais também são armazenadas no servidor, representando um risco potencial caso o servidor seja comprometido.
+
+### Ausência de Estado
+
+#### Autenticação por Token
+Stateless, não requer armazenamento de sessão no servidor, o que reduz a carga no servidor.
+
+#### Autenticação Básica
+Stateless, não requer armazenamento de sessão no servidor, o que reduz a carga no servidor.
+
+### Complexidade de Implementação
+
+#### Autenticação por Token
+Mais complexo de implementar em comparação com a Autenticação Básica, pois requer a geração e manipulação de tokens no lado do servidor, além de lidar com a expiração e revogação de tokens.
+
+#### Autenticação Básica
+Mais fácil de implementar, pois envolve apenas a verificação das credenciais em cada requisição. Nenhuma geração ou manipulação de token é necessária.
+
+No Django REST Framework, fazer autenticação por Token é ainda melhor pois dá quase a mesma quantidade de trabalho que fazer autenticação básica. Vamos ver como isso funciona? Primeiro, você precisará acrescentar um app novo à suas configurações e alterar a configuração padrão de autenticação:
+
+```bash
+# marryme/settings.py
+
+# ...
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'budget',
+    'rest_framework',
++   'rest_framework.authtoken',
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+-       'rest_framework.authentication.BasicAuthentication',
++       'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+# ...
+```
+
+Agora, vamos primeiro criar uma rota para que uma pessoa possa enviar, via requisição, suas credenciais para obter uma token:
+
+```bash
+# marryme/urls.py
+
+
+from django.contrib import admin
+from django.urls import path, include
++ from rest_framework.authtoken.views import obtain_auth_token
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
++    path('login/', obtain_auth_token, name='login'),
+    path('', include('budget.urls')),
+]
+```
+
+E pronto! O Django REST Framework nos dá toda essa lógica já pronta. Para testar, rode as migrations para termos a lógica de tokens no banco e faça uma requisição à sua nova rota:
+
+```bash
+// POST /login/
+
+{
+  "username": "AlgumUser",
+  "password":  "SenhaDesteUser"
+}
+```
+
+Você obterá sua token.
+
+</details>
+</br>
+
+<details>
+<summary><strong> Autenticando com Tokens </strong></summary>
+
+Para permitir que as Tokens sejam usadas como autenticação, vá em suas views e faça a alteração abaixo:
+
+```bash
+# budget/views.py
+
+
+from rest_framework import viewsets
+from .models import Vendor, Marriage, Budget
+- from rest_framework.authentication import BasicAuthentication
++ from rest_framework.authentication import TokenAuthentication
+from .serializers import (AdminVendorSerializer,
+                          VendorSerializer,
+                          MarriageSerializer,
+                          BudgetSerializer)
+from .permissions import IsOwnerOrAdmin
+
+
+class VendorViewSet(viewsets.ModelViewSet):
+    queryset = Vendor.objects.all()
+    serializer_class = AdminVendorSerializer
+-   authentication_classes = [BasicAuthentication]
++   authentication_classes = [TokenAuthentication]
+
+    def get_serializer_class(self):
+        if self.action in ("create", "destroy", "update"):
+            return AdminVendorSerializer
+        return VendorSerializer
+
+
+class MarriageViewSet(viewsets.ModelViewSet):
+    queryset = Marriage.objects.all()
+    serializer_class = MarriageSerializer
+-   authentication_classes = [BasicAuthentication]
++   authentication_classes = [TokenAuthentication]
+    permission_classes = [IsOwnerOrAdmin]
+
+def get_queryset(self):
+    if self.request.user.is_superuser:
+        return Marriage.objects.all()
+    else:
+        return Marriage.objects.filter(user=self.request.user)
+
+
+class BudgetViewSet(viewsets.ModelViewSet):
+    queryset = Budget.objects.all()
+    serializer_class = BudgetSerializer
+-   authentication_classes = [BasicAuthentication]
++   authentication_classes = [TokenAuthentication]
+    permission_classes = [IsOwnerOrAdmin]
+
+def get_queryset(self):
+    if self.request.user.is_superuser:
+        return Budget.objects.all()
+    else:
+        return Budget.objects.filter(user=self.request.user)
+```
+
+E é isso, sim, só isso, que muda! Substituímos a classe de autenticação de BasicAuthentication para TokenAuthentication.
+
+Agora faça uma requisição para obter o casamento de uma pessoa usuária sem autenticar e veja que você não tem acesso aos dados. Agora acrescente ao cabeçalho da requisição a chave Authorization com o valor Token SuaTokenAqui, e veja como funciona! Experimente alterar entre tokens de diferentes users e veja como cada pessoa só acessa o próprio dado!
+</details>
+</br>
+
 <details>
 <summary><strong>  </strong></summary>
 
@@ -476,4 +639,162 @@ Por outro lado, o admin terá acesso a todos os casamentos e orçamentos. Com es
 </details>
 </br>
 
+<details>
+<summary><strong>  </strong></summary>
 
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+
+</details>
+</br>
