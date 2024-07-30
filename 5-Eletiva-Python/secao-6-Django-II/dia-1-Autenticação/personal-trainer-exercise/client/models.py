@@ -17,7 +17,7 @@ class Client(models.Model):
 
 
 class WorkoutPlan(models.Model):
-    client = models.OneToOneField(
+    client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
         related_name="workout_plan"
