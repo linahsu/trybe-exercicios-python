@@ -1,5 +1,4 @@
 from pytest_django.asserts import assertTemplateUsed, assertContains
-from movies.models import MovieRoom
 
 
 def test_if_response_is_200(client):
