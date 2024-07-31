@@ -1,6 +1,13 @@
 # tests/test_db.py
 from django.contrib.auth.models import User
-from movies.models import Person, Genre, Movie, MovieTheater, MovieRoom
+from movies.models import (
+    Person,
+    Genre,
+    Movie,
+    MovieTheater,
+    MovieRoom,
+    MovieSeat,
+)
 
 
 def test_user_table_is_healthy():
@@ -98,3 +105,17 @@ def test_movie_room_table_is_healthy():
     movie_room.delete()
     number_of_movie_rooms = len(MovieRoom.objects.all())
     assert number_of_movie_rooms == 1
+
+
+def test_movie_seat_table_is_healthy():
+    number_of_seats = len(MovieSeat.objects.all())
+    assert number_of_seats == 5
+
+    MovieSeat.objects.create(name="A6", room=MovieRoom.objects.get(id=1))
+    number_of_seats = len(MovieSeat.objects.all())
+    assert number_of_seats == 6
+
+    seat = MovieSeat.objects.get(id=1)
+    seat.delete()
+    number_of_seats = len(MovieSeat.objects.all())
+    assert number_of_seats == 5
