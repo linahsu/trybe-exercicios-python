@@ -1436,35 +1436,243 @@ Execute o comando de testes e veja agora 32 testes sendo aprovados! 🎉
 </details>
 </br>
 
+# Deployment no Railway
+
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Usando o gunicorn com o Django </strong></summary>
+
+### O que é o gunicorn
+
+O gunicorn é um servidor HTTP WSGI para Python. Ele é um servidor de produção, ou seja, ele é destinado a ser usado quando precisamos fazer o deploy de uma aplicação Python. O papel dele será bem semelhante ao realizado pelo comando runserver do Django, mas trazendo vantagens como melhor desempenho e mais segurança.
+
+### Como usar o gunicorn com o Django
+
+Para usar o gunicorn com o Django, precisamos fazer algumas alterações no nosso projeto. A primeira delas é instalar o gunicorn no nosso ambiente virtual:
 
 ```bash
+pip install gunicorn
 ```
+
+Relembrando 🧠: Se quiser usar o gunicorn em um projeto que já possui um arquivo de dependências como requirements.txt, adicione-o lá.
+
+Com isso, você já pode utilizar o gunicorn para rodar sua aplicação localmente! 🚀
+
+Basta executar o comando:
 
 ```bash
+gunicorn seu_projeto_django.wsgi
 ```
 
-```bash
-```
+Quando rodamos esse comando, o gunicorn irá buscar o objeto chamado application dentro do arquivo wsgi.py da pasta do seu projeto Django. Esse objeto é o responsável por receber as requisições HTTP e retornar as respostas, também usado por baixo dos panos pelo runserver do Django e é registrado na variável WSGI_APPLICATION do settings.py.
 
+De olho na dica 👀: O gunicorn também pode ser utilizado com outros frameworks como o Flask e o FastAPI.
 
 </details>
 </br>
 
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Usando o Docker com o Django </strong></summary>
+
+O servidor gunicorn será uma peça fundamental para o deploy da nossa aplicação Django no Railway. Mas antes de começarmos as configurações no Railway, precisamos preparar uma imagem Docker que será usada como base para o deploy.
+
+Esse passo nos ajudará a garantir comportamentos consistentes entre os ambientes de desenvolvimento e produção, e facilitará muito o processo de deploy no Railway.
+
+### Ponto de partida
+
+Para os procedimentos que faremos, vamos usar como base a aplicação cinetrybe.
+
+Esse repositório contém uma aplicação Django que gerencia salas de cinema utilizando conceitos que já vimos no curso até aqui. Nele já temos um Dockerfile para uma instância do banco de dados MySQL e as principais dependências definidas no requirements.txt (como o gunicorn e mysqlclient).
+
+Como vamos focar no deploy, não vamos nos aprofundar no código da aplicação.
+
+### Dockerfile para o Django
+
+A primeira alteração que vamos fazer é criar um Dockerfile para a nossa aplicação Django. Esse Dockerfile será responsável por criar uma imagem Docker que será usada como base para o deploy no Railway.
+
+Como já temos um Dockerfile para o Mysql, vamos renomeá-lo para criar um novo arquivo chamado Dockerfile na raiz do projeto e adicionar o conteúdo a seguir:
 
 ```bash
+mv Dockerfile Dockerfile.mysql
+touch Dockerfile
+touch .dockerignore
 ```
+
+Arquivo Dockerfile
 
 ```bash
+FROM python:3.10-slim
+
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN apt update \
+    && apt install -y python3-dev netcat-openbsd default-libmysqlclient-dev build-essential pkg-config \
+    && pip install --upgrade pip
+
+COPY ./requirements.txt ./
+
+RUN pip install -r requirements.txt
+
+COPY ./ ./
+
+CMD ["gunicorn", "cinetrybe.wsgi", "--bind", "0.0.0.0:8000"]
 ```
+
+Arquivo .dockerignore
 
 ```bash
+.env
+
+.git
+.cache
+
+.venv
+
+*.egg-info
+
+setup.cfg
+__pycache__
+.coverage
+.pytest_cache
 ```
 
+De olho na dica 👀: Existem diversas formas de configurar um ambiente com Docker para aplicação Django. Se você encontrar outras formas de fazê-la, não se preocupe! O importante é que você entenda os conceitos e consiga aplicá-los no seu projeto.
 
+Alguns comentários importantes sobre essa configuração sugerida para o Dockerfile:
+
+* Estamos usando a imagem python:3.10-slim como base, então a versão do Python será a 3.10. Imagens slim não são tão enxutas quanto as alpine, mas com ela podemos garantir que o mysqlclient será instalado sem muita complexidade;
+* Estamos definindo a variável de ambiente PYTHONUNBUFFERED como 1. Essa variável é importante para garantir que as saídas do Python sejam exibidas imediatamente no terminal, sem que seja feito cache das saídas. Assim poderemos ver mensagens de debug no terminal em tempo real;
+* Estamos instalando as dependências do sistema operacional necessárias para instalar o mysqlclient (a dependência do Django para conexão com o banco MySQL), mas elas podem variar de acordo com a imagem base que você escolher;
+* Estamos utilizando o parâmetro --bind do gunicorn para definir o endereço e porta que o servidor irá escutar. Nesse caso, estamos definindo que o gunicorn irá escutar na porta 8000 de todas as interfaces de rede (0.0.0.0). Essa configuração será essencial para nossa aplicação ser acessível no Railway.
+* Com o .dockerignore, estamos evitando que alguns arquivos desnecessários sejam enviados ao container. Isso é importante para evitar que o container fique muito pesado e também para não expor dados sensíveis. Você pode adicionar outros arquivos que não deseja enviar ao container, como arquivos de testes, arquivos de configuração do editor de texto, etc.
+
+Para testar se a nossa imagem está funcionando, vamos construí-la e executá-la localmente:
+
+```bash
+docker build -t cinetrybe .
+docker run -it --rm -p 8000:8000 cinetrybe
+```
+
+### Conectando ao banco de dados
+
+Nesse momento, se você tentar acessar a aplicação no navegador, você verá um erro de conexão com o banco de dados. Isso acontece porque o gunicorn está tentando se conectar ao banco de dados, mas não consegue encontrar o servidor.
+
+Para isso, precisaremos de um docker-compose para subir o banco de dados e a aplicação Django ao mesmo tempo. Vamos criar um arquivo docker-compose.yml na raiz do projeto:
+
+```bash
+touch docker-compose.yml
+```
+
+Arquivo docker-compose.yml
+
+```bash
+version: "3.8"
+
+services:
+  db_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d/:ro
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db_service
+```
+
+Além disso, precisamos fazer um pequeno ajuste no settings.py da nossa aplicação Django para que a variável DATABASES faça a conexão com o serviço mysql_db definido no docker-compose.yml:
+
+Arquivo settings.py
+
+```bash
+
+DATABASES = {
+    'default': {
+       'ENGINE': 'django.db.backends.mysql',
+       'NAME': 'cinetrybe_database',
+       'USER': 'root',
+       'PASSWORD': 'password',
+-       'HOST': '127.0.0.1',
++       'HOST': 'db_service',
+       'PORT': '3306',
+    }
+}
+```
+
+Maravilha! 🎉 Agora podemos rodar nossa aplicação com o docker-compose:
+
+```bash
+docker-compose up --build
+```
+
+Ao acessar http://localhost:8000/ temos… um novo erro! 😅
+
+Esse erro ocorre porque, através do docker-compose.yml, subimos uma nova instância do banco de dados, e por isso precisamos criar as tabelas novamente com python3 manage.py migrate dentro dela. Além disso, vamos precisar do comando collectstatic e eventualmente do makemigrations. Vejamos como fazer isso!
+
+### Configurando o entrypoint
+
+Como precisamos rodar alguns comandos antes de iniciar o gunicorn, como o das migrations, vamos criar um entrypoint para nossa aplicação. O entrypoint é um script que será executado no CMD do Dockerfile.
+
+Para isso, vamos criar um arquivo entrypoint.sh na raiz do projeto:
+
+```bash
+touch entrypoint.sh
+```
+
+Arquivo entrypoint.sh
+
+```bash
+#!/bin/sh
+
+# Essa parte é importante para garantir que o banco de dados já esteja no ar
+# antes de rodar as migrações
+
+while ! nc -z db_service 3306 ; do
+    echo "> > > Esperando o banco de dados MySQL ficar disponível..."
+    sleep 3
+done
+
+echo "> > > Banco de dados MySQL disponível!"
+
+
+python3 manage.py collectstatic --noinput
+python3 manage.py makemigrations
+python3 manage.py migrate
+gunicorn cinetrybe.wsgi --bind 0.0.0.0:8000
+```
+
+E vamos ajustar o Dockerfile para que ele execute esse script:
+
+Arquivo Dockerfile
+
+```bash
+...
+
+-CMD ["gunicorn", "cinetrybe.wsgi", "--bind", "0.0.0.0:8000"]
++CMD ["sh", "entrypoint.sh"]
+```
+
+Agora, vamos construir e rodar nossa aplicação novamente:
+
+```bash
+docker-compose up --build
+```
+
+Agora sim! 🎉 Se acessar a rota /admin, verá a tela de login
+
+Ah, e como ainda não existe um super-user cadastrado no banco de dados local, podemos criar um com o comando:
+
+```bash
+docker-compose run --rm web python manage.py createsuperuser
+```
+
+Temos nossa aplicação rodando com o gunicorn e o banco de dados MySQL em serviços no Docker localmente. Mas ainda temos alguns ajustes para fazer antes de fazer o deploy no Railway. 👀
 </details>
 </br>
 
