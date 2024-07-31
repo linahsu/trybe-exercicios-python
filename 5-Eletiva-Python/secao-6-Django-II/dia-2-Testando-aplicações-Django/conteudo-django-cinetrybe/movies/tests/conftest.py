@@ -1,12 +1,14 @@
 import pytest
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
-from movies.models import (MovieTheater,
-                          MovieRoom,
-                          Genre,
-                          Movie,
-                          Person,
-                          MovieSeat)
+from movies.models import (
+    MovieTheater,
+    MovieRoom,
+    Genre,
+    Movie,
+    Person,
+    MovieSeat,
+)
 
 
 @pytest.fixture
