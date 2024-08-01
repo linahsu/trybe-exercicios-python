@@ -1676,34 +1676,166 @@ Temos nossa aplicação rodando com o gunicorn e o banco de dados MySQL em servi
 </details>
 </br>
 
+# Configuração do MySQL no Railway
+
+### Por que usar o MySQL do Railway?
+
+Até o momento, estamos utilizando o MySQL rodando em um container Docker para armazenar os dados da nossa aplicação. Mas para o deploy no Railway, utilizaremos de um banco de dados MySQL da própria plataforma separado da aplicação Back-end. Importante mencionar que, para o deploy, não há uma necessidade de usar o Railway para hospedagem do banco: você pode usar outros provedores como o AWS RDS, Google Cloud SQL ou outras opções gratuitas.
+
+Isso é uma boa prática, pois permite que o banco de dados seja escalado separadamente da aplicação, e também que o banco de dados seja mais facilmente acessado por outros serviços em nuvem. Além disso, pelo painel do Railway podemos acompanhar métricas de uso do banco de dados, e também ajustar variáveis de ambiente sem alterar o código da aplicação.
+
+Além disso, como o Railway não suporta o docker-compose, precisamos separar os 2 serviços diretamente na plataforma:
+
+O banco de dados MySQL;
+O servidor da aplicação Django.
+
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Criando o banco de dados MySQL no Railway </strong></summary>
+
+Antes de criar o banco de dados, precisamos criar um novo projeto no Railway. Para isso, acesse o site do Railway com a sua conta e crie um novo projeto vazio. O fluxo é: + New Project ➡️ Empty Project.
+
+Com o projeto criado, vamos criar o banco de dados MySQL. Para isso, escolha a opção de adicionar um novo serviço de banco de dados MySQL. O fluxo é: Add a Service (ou New) ➡️ Database ➡️ Add MySQL. Após alguns segundos o serviço será criado e estará disponível para uso! 🚀
+
+### Preparando a aplicação para múltiplos bancos de dados
+
+Agora que temos o banco de dados MySQL criado, precisamos configurar a nossa aplicação Django para se conectar a ele. Para isso, vamos utilizar as variáveis de ambiente que o Railway disponibiliza para nós. Para encontrar as variáveis de ambiente, clique no serviço MySQL criado, acesse a aba Connect e confira a seção Available Variables. Os valores estarão escondidos por padrão, mas você pode clicar no ícone de olho 👁️ para visualizá-los.
+
+Como não queremos que essas variáveis de conexão fiquem “fixas” no nosso repositório, e sim fazer a leitura através do ambiente, vamos ajustar nosso código para carregar as variáveis de ambiente a partir de um arquivo .env na raiz do nosso projeto.
+
+Faremos de forma que o programa busque as variáveis de ambiente de onde quer que esteja rodando e as use - seja localmente ou em produção.
+
+Crie o arquivo e adicione as variáveis de ambiente que já estávamos usando localmente:
 
 ```bash
+touch .env
 ```
+
+Arquivo .env
 
 ```bash
+MYSQLDATABASE=cinetrybe_database
+MYSQLHOST=db_service
+MYSQLPASSWORD=password
+MYSQLPORT=3306
+MYSQLUSER=root
 ```
+
+Atenção ⚠️:
+
+Os valores das variáveis de ambiente de produção do Railway são diferentes das que estávamos usando localmente. No arquivo .env não devemos usar os valores das variáveis do ambiente de produção do Railway.
+Apesar disso, lembre de usar os mesmos nomes de variáveis do Railway para facilitar a configuração.
+Agora precisamos ajustar o docker-compose para que ele carregue as variáveis de ambiente do arquivo .env e as disponibilize para a aplicação Django. Para isso, vamos adicionar a seguinte configuração ao nosso serviço django:
+
+Arquivo docker-compose.yml
 
 ```bash
+version: "3.8"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d/:ro
+  web:
++   env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
 ```
 
+Vamos precisar também ajustar script entrypoint.sh para que ele valide a criação do banco de dados através das variáveis de ambiente. Para isso, vamos fazer o seguinte ajuste no script:
+
+Arquivo entrypoint.sh
+
+```bash
+...
+
+- while ! nc -z db_service 3306 ; do
++ while ! nc -z $MYSQLHOST $MYSQLPORT ; do
+    echo "> > > Esperando o banco de dados MySQL ficar disponível..."
+    sleep 3
+done
+
+...
+```
+
+E por fim, precisamos ajustar o settings.py da nossa aplicação Django para que a variável DATABASES faça a conexão com o serviço mysql_db definido no docker-compose.yml:
+
+Arquivo settings.py
+
+```bash
++import os
+
+...
+
+DATABASES = {
+    'default': {
+       'ENGINE': 'django.db.backends.mysql',
+-      'NAME': 'cinetrybe_database',
++      'NAME': os.environ.get('MYSQLDATABASE'),
+-      'USER': 'root',
++      'USER': os.environ.get('MYSQLUSER'),
+-      'PASSWORD': 'password',
++      'PASSWORD': os.environ.get('MYSQLPASSWORD'),
+-      'HOST': 'db_service',
++      'HOST': os.environ.get('MYSQLHOST'),
+-      'PORT': '3306',
++      'PORT': os.environ.get('MYSQLPORT'),
+    }
+}
+
+...
+```
+
+Agora podemos rodar nossa aplicação com o docker-compose, e verificar que está funcionando normalmente.
+
+Ufa! 🥵 Foi muita coisa, mas vai valer a pena para nosso próximo passo: subir servidor Django no Railway! 🚀
 
 </details>
 </br>
 
+# Deploy do Servidor Django
+
 <details>
-<summary><strong>  </strong></summary>
+<summary><strong> Configurando o serviço Django no Railway </strong></summary>
 
-```bash
-```
+Utilizando o projeto já criado anteriormente, vamos criar um serviço para o servidor Django. Para isso, escolha a opção de adicionar um novo serviço de banco de dados MySQL. O fluxo é: + New ➡️ Empty Service.
 
-```bash
-```
+Ao clicar no serviço criado, você pode acessar a aba Settings e alterar o nome do serviço (Service Name) para algo que faça mais sentido. Aqui vamos trocar para cinetrybe-dj.
 
-```bash
-```
+Além disso, já vamos deixar criado um domínio para o nosso serviço. Para isso, na aba Settings, clique em Generate Domain. Esse domínio será usado para acessar a nossa aplicação Django na nuvem.
 
+### Variáveis de ambiente
 
+No Railway, podemos definir variáveis de ambiente para cada serviço. Para isso, basta acessar a aba Variables do serviço e adicionar as variáveis de ambiente que precisamos. As principais variáveis de ambiente que precisamos definir são aquelas do serviço do MySQL, que já estão disponíveis para nós. Isso significa adicionar as variáveis de ambiente do serviço do MySQL via referência (Add Reference) no serviço da sua aplicação Django.
+
+De olho na dica 👀: Na seção de implantação em Railway do curso você pode relembrar como fazer isso.
+
+Ah, e lembra que o gunicorn está escutando na porta 8000? Precisamos informar isso para o Railway definindo a variável PORT com o valor 8000.
+
+### Subindo o código para o Railway
+
+Agora que já temos o serviço Django configurado, podemos subir o código para o Railway. Há 2 formas principais para fazer isso:
+
+GitHub: Usando a interface do Railway, podemos autorizar que um repositório do Github seja “escutado”;
+CLI: Usando a CLI (Command Line Interface) do Railway, podemos subir o código local diretamente do nosso terminal.
+Para esse conteúdo vamos utilizar a CLI do Railway, mas você pode vincular o projeto com o GitHub posteriormente.
+
+O passo-a-passo é o seguinte:
+
+Caso não tenha instalado a CLI do Railway ainda, siga o tutorial oficial para seu Sistema Operacional;
+Caso não tenha feito login na CLI do Railway, execute o comando railway login e siga as instruções;
+Execute o comando railway link para vincular o código local com o projeto criado no Railway (no nosso exemplo foi nomeado como Cinetrybe);
+Execute o comando railway service para informar que o código local está atrelado ao serviço do Django que criamos (no nosso exemplo foi nomeado como cinetrybe-dj);
+Execute o comando railway up -d para subir o código para o Railway. 🚀
+Aguarde o deploy ser feito - acompanhe o progresso pela aba Deployments do serviço onde está seu projeto Django. Agora você pode acessar o domínio que criamos para o serviço Django e ver a aplicação rodando na nuvem mais um erro para ser corrigido! 😅
+
+Isso acontece porque o framework Django insere algumas validações de segurança, mas não se preocupe: vamos resolver isso agora! 💚
 </details>
 </br>
