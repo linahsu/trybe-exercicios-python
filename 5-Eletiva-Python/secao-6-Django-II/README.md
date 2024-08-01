@@ -1839,3 +1839,144 @@ Aguarde o deploy ser feito - acompanhe o progresso pela aba Deployments do servi
 Isso acontece porque o framework Django insere algumas validações de segurança, mas não se preocupe: vamos resolver isso agora! 💚
 </details>
 </br>
+
+# Configurações do Django para deploy
+
+<details>
+<summary><strong> Configurando o serviço Django no Railway </strong></summary>
+
+### Configuração ALLOWED_HOSTS
+
+O primeiro erro que vemos ao acessar a URL da aplicação é:
+
+```bash
+Invalid HTTP_HOST header: 'cinetrybe-dj-production.up.railway.app'. You may need to add 'cinetrybe-dj-production.up.railway.app' to ALLOWED_HOSTS.
+```
+
+Esse ALLOWED_HOSTS mencionado é uma variável global localizada no nosso settings.py, que armazena uma lista de strings. Uma configuração possível para essa variável é:
+
+Arquivo settings.py
+
+```bash
+# ...
+
+-ALLOWED_HOSTS = []
++ALLOWED_HOSTS = [
+    os.environ.get("RAILWAY_STATIC_URL", ""),
+    ".localhost",
+    "127.0.0.1",
+    "[::1]",
+]
+
+# ...
+```
+
+Atenção ⚠️: A variável RAILWAY_STATIC_URL é uma variável de ambiente que o Railway disponibiliza e representa o domínio público da nossa aplicação, então não precisamos fazer mais nada.
+
+### Configuração CSRF_TRUSTED_ORIGINS
+
+A próxima configuração necessária é a CSRF_TRUSTED_ORIGINS. Essa configuração existe para que o Django consiga validar o token CSRF (Cross-site Request Forgery) em requisições potencialmente inseguras (POST, PUT, PATCH e DELETE).
+
+Para isso, vamos definir essa variável como:
+
+Arquivo settings.py
+
+```bash
+# ...
+
++CSRF_TRUSTED_ORIGINS = ["https://" + os.environ.get("RAILWAY_STATIC_URL", "")]
+
+# ...
+```
+
+### Configuração DEBUG
+
+A variável DEBUG é uma variável global do Django que define se a aplicação está em modo de desenvolvimento ou produção. Quando definimos essa variável como True, o Django exibe informações de debug no navegador, como tracebacks e warnings.
+
+Para o deploy, é importante que essa variável esteja definida como False. Para isso, vamos definir essa variável como:
+
+Arquivo settings.py
+
+```bash
+# ...
+
+-DEBUG = True
++DEBUG = bool(int(os.environ.get('DEBUG', 0)))
+
+# ...
+```
+
+⚠️ Para termos as funcionalidades de Debug localmente, basta definir a variável DEBUG como 1 no arquivo .env:
+
+Arquivo .env
+
+```bash
+# ...
+DEBUG=1
+# ...
+```
+
+### Configuração SECRET_KEY
+
+Por fim, vamos configurar a variável SECRET_KEY. Essa variável é responsável por garantir a segurança da aplicação Django. Ela é usada para assinar os tokens CSRF, cookies de sessão e outras funcionalidades de segurança do Django.
+
+Para o deploy, é importante que essa variável seja definida como uma string aleatória e segura. Para isso, vamos definir essa variável como:
+
+Arquivo settings.py
+
+```bash
+# ...
+
+-SECRET_KEY = "django-insecure-********************************************"
++SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'change-me')
+
+# ...
+```
+
+⚠️ Assim, precisaremos criar uma nova chave (você pode gerar com esse site, e escolher a opção “504-bit WPA Key”) e definir a variável DJANGO_SECRET_KEY no arquivo .env e também no Railway:
+
+## Django no ar! 🚀
+
+Com todas as configurações feitas, podemos fazer o deploy da nossa aplicação Django no Railway com sucesso! 🚀
+
+```bash
+railway up -d
+```
+
+</details>
+</br>
+
+<details>
+<summary><strong> Comandos com o ambiente do servidor Railway </strong></summary>
+
+Vale lembrar que, caso você precise rodar algum comando na sua aplicação utilizando as variáveis de ambiente configuradas no Railway (ex: conexão com o banco de dados na nuvem), você pode usar a interface CLI para isso:
+
+```bash
+railway run <comando>
+```
+
+Por exemplo, para criar um super-usuário no banco de dados da aplicação Django que está no Railway, podemos usar o comando:
+
+```bash
+railway run python manage.py createsuperuser
+```
+
+Atenção ⚠️: O comando railway run ainda executará no seu terminal local, mas com as variáveis de ambiente do Railway. Isso significa que, para o exemplo anterior, você precisa preparar a aplicação Django localmente instalando dependências.
+</details>
+</br>
+
+<details>
+<summary><strong> Configurando o serviço Django no Railway </strong></summary>
+
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+</details>
+</br>
