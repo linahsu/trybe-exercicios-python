@@ -4,3 +4,4 @@ gunicorn==21.2.0
 Markdown==3.4.4
 mysqlclient==2.2.0
 whitenoise==6.5.0
+cloudinary==1.33.0

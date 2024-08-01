@@ -1933,7 +1933,7 @@ Arquivo settings.py
 # ...
 ```
 
-⚠️ Assim, precisaremos criar uma nova chave (você pode gerar com esse site, e escolher a opção “504-bit WPA Key”) e definir a variável DJANGO_SECRET_KEY no arquivo .env e também no Railway:
+⚠️ Assim, precisaremos criar uma nova chave (você pode gerar com esse site: https://randomkeygen.com/, e escolher a opção “504-bit WPA Key”) e definir a variável DJANGO_SECRET_KEY no arquivo .env e também no Railway:
 
 ## Django no ar! 🚀
 
@@ -1965,8 +1965,181 @@ Atenção ⚠️: O comando railway run ainda executará no seu terminal local, 
 </details>
 </br>
 
+# Manipulação de imagens com Django na nuvem
+
+Antes de finalizarmos o conteúdo do dia, é essencial tratarmos do assunto de manipulação de imagens com nosso servidor em nuvem.
+
+Até o momento vimos apenas formas de armazenar imagens (como a foto de um usuário cadastrado no banco).
+
+O problema é que, agora, a cada re-deploy da aplicação, as imagens são perdidas, pois o servidor é recriado do zero.
+
+Para resolver esse problema, vamos utilizar o serviço de armazenamento de arquivos em nuvem do Cloudinary. Ele não exige cartão de crédito para começar a usar, tem um plano gratuito bom para quem está começando, e possui uma boa integração com o Django para manipulação de imagens! 🤩
+
 <details>
-<summary><strong> Configurando o serviço Django no Railway </strong></summary>
+<summary><strong> Criação da conta no Cloudinary </strong></summary>
+
+
+Para começar, vamos criar uma conta no Cloudinary. Para isso, acesse o site, clique em Sign up e crie sua conta como preferir: com e-mail, Google ou GiHub.
+
+No passo seguinte, você verá uma tela como a seguinte. Escolha a opção Developer.
+
+Em seguida, você já terá acesso ao seu painel de controle do Cloudinary, onde poderá ver suas credenciais de acesso e exemplos de uso da plataforma em diversas linguagens de programação. Acesse a aba Dashboard como indicado na imagem a seguir, e poderá acompanhar também o uso da sua conta.
+</details>
+</br>
+
+<details>
+<summary><strong> Uso do Cloudinary no Django </strong></summary>
+
+Agora que já temos nossa conta no Cloudinary, vamos ajustar nossa aplicação Django para que ela possa se comunicar com o serviço.
+
+Para isso, vamos adicionar a biblioteca ao arquivo requirements.txt:
+
+```bash
+# ...
+cloudinary==1.33.0
+# ...
+```
+
+Em seguida, vamos inserir as credenciais de acesso ao Cloudinary no arquivo .env:
+
+Arquivo .env
+
+```bash
+# ...
+CLOUDINARY_CLOUD_NAME=**********
+CLOUDINARY_API_KEY=**********
+CLOUDINARY_API_SECRET=**********
+# ...
+```
+
+Insira as credenciais no Railway também!
+
+Atenção ⚠️: Substitua os asteriscos pelas suas credenciais de acesso ao Cloudinary presentes no Dashboard da plataforma.
+
+Agora, vamos editar nosso arquivo settings.py para que ele possa se comunicar com o Cloudinary:
+
+Arquivo settings.py
+
+```bash
+# ...
+
++import cloudinary
++import cloudinary.uploader
++import cloudinary.api
+
+# ...
+
++cloudinary.config(
++    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
++    api_key=os.environ.get('CLOUDINARY_API_KEY'),
++    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
++)
+
+# ...
+```
+
+</details>
+</br>
+
+<details>
+<summary><strong> Alteração da Model e Template </strong></summary>
+
+Maravilha! Isso é tudo que precisamos para começar a usar o Cloudinary no nosso projeto Django. Agora, vamos alterar nossa Model MovieTheater para que ela possa receber uma foto da capa do cinema:
+
+Arquivo movies/models.py
+
+```bash
+from django.db import models
++from cloudinary.models import CloudinaryField
+
+# ...
+
+class MovieTheater(models.Model):
+    name = models.CharField(max_length=100)
++   cover_image = CloudinaryField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+# ...
+```
+
+Repare que não vamos usar o models.ImageField, mas sim o CloudinaryField. Isso porque o CloudinaryField já faz o upload da imagem para o Cloudinary e retorna uma URL para a imagem. Moleza né?! 🤩
+
+Com isso, vamos alterar nosso template movies/templates/index.html para que ele possa exibir a imagem:
+
+Arquivo movies/templates/index.html
+
+```bash
+...
+
+        <div class="bg-white rounded-lg shadow-md">
++            {% if movie_theater.cover_image %}
++            <img src="{{ movie_theater.cover_image.url }}" alt="Imagem de capa do cinema"
++                class="w-full h-32 object-cover rounded-t-lg">
++            {% else %}
+            <img src="{% static 'img/cinema_default.jpeg' %}" alt="Imagem padrão de cinema"
+                class="w-full h-32 object-cover rounded-t-lg">
++            {% endif %}
+            <div class="p-4">
+                <h3 class="text-lg font-semibold mb-2 text-center">{{movie_theater.name}}</h3>
+            </div>
+        </div>
+
+...
+```
+
+Atenção ⚠️: Repare que estamos não usamos o static usando o movie_theater.cover_image.url para acessar a URL da imagem. Isso porque o Cloudinary já faz o upload da imagem para a nuvem e retorna a URL da imagem para o Django.
+</details>
+</br>
+
+<details>
+<summary><strong> Cloudinary com formulários do Django </strong></summary>
+
+Se for necessário utilizar o Cloudinary com formulários do Django, você precisará de alguns ajustes extras. Para saber quais são os ajustes, basta seguir a documentação da ferramenta. 😉
+
+### Aproveite!
+
+Faça o Deploy da sua aplicação no Railway e experimente usar o Django Admin para criar Cinemas diferentes: com e sem imagem. Você verá que o Cloudinary já faz o upload da imagem para a nuvem e retorna a URL da imagem para o Django! 🤩
+
+Com o ajuste que fizemos no template, você verá que o Django já exibe a imagem de capa do cinema cadastrado (e usa a imagem padrão caso não tenha sido cadastrada uma imagem para o cinema).
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
+
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
+
+</details>
+</br>
+
+<details>
+<summary><strong>  </strong></summary>
 
 
 ```bash

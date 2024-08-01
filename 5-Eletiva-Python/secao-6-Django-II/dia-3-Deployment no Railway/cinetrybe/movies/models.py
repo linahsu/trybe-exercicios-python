@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class Person(models.Model):
@@ -29,6 +30,7 @@ class Movie(models.Model):
 
 class MovieTheater(models.Model):
     name = models.CharField(max_length=100)
+    cover_image = CloudinaryField(blank=True)
 
     def __str__(self):
         return self.name

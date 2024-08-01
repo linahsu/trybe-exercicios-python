@@ -24,8 +24,13 @@ Cine Trybe
     {% for movie_theater in movie_theaters %}
     <a href="{% url 'theater_details' movie_theater.id %}">
         <div class="bg-white rounded-lg shadow-md">
-            <img src="{% static 'img/cinema_default.jpeg' %}" alt="Imagem padrão de cinema"
-                class="w-full h-32 object-cover rounded-t-lg">
+            {% if movie_theater.cover_image %}
+                <img src="{{ movie_theater.cover_image.url }}" alt="Imagem de capa do cinema"
+                    class="w-full h-32 object-cover rounded-t-lg">
+            {% else %}
+                <img src="{% static 'img/cinema_default.jpeg' %}" alt="Imagem padrão de cinema"
+                    class="w-full h-32 object-cover rounded-t-lg">
+            {% endif %}
             <div class="p-4">
                 <h3 class="text-lg font-semibold mb-2 text-center">{{movie_theater.name}}</h3>
             </div>
