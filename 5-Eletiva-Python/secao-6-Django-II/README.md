@@ -1436,11 +1436,679 @@ Execute o comando de testes e veja agora 32 testes sendo aprovados! 🎉
 </details>
 </br>
 
+# Deployment no Railway
+
+<details>
+<summary><strong> Usando o gunicorn com o Django </strong></summary>
+
+### O que é o gunicorn
+
+O gunicorn é um servidor HTTP WSGI para Python. Ele é um servidor de produção, ou seja, ele é destinado a ser usado quando precisamos fazer o deploy de uma aplicação Python. O papel dele será bem semelhante ao realizado pelo comando runserver do Django, mas trazendo vantagens como melhor desempenho e mais segurança.
+
+### Como usar o gunicorn com o Django
+
+Para usar o gunicorn com o Django, precisamos fazer algumas alterações no nosso projeto. A primeira delas é instalar o gunicorn no nosso ambiente virtual:
+
+```bash
+pip install gunicorn
+```
+
+Relembrando 🧠: Se quiser usar o gunicorn em um projeto que já possui um arquivo de dependências como requirements.txt, adicione-o lá.
+
+Com isso, você já pode utilizar o gunicorn para rodar sua aplicação localmente! 🚀
+
+Basta executar o comando:
+
+```bash
+gunicorn seu_projeto_django.wsgi
+```
+
+Quando rodamos esse comando, o gunicorn irá buscar o objeto chamado application dentro do arquivo wsgi.py da pasta do seu projeto Django. Esse objeto é o responsável por receber as requisições HTTP e retornar as respostas, também usado por baixo dos panos pelo runserver do Django e é registrado na variável WSGI_APPLICATION do settings.py.
+
+De olho na dica 👀: O gunicorn também pode ser utilizado com outros frameworks como o Flask e o FastAPI.
+
+</details>
+</br>
+
+<details>
+<summary><strong> Usando o Docker com o Django </strong></summary>
+
+O servidor gunicorn será uma peça fundamental para o deploy da nossa aplicação Django no Railway. Mas antes de começarmos as configurações no Railway, precisamos preparar uma imagem Docker que será usada como base para o deploy.
+
+Esse passo nos ajudará a garantir comportamentos consistentes entre os ambientes de desenvolvimento e produção, e facilitará muito o processo de deploy no Railway.
+
+### Ponto de partida
+
+Para os procedimentos que faremos, vamos usar como base a aplicação cinetrybe.
+
+Esse repositório contém uma aplicação Django que gerencia salas de cinema utilizando conceitos que já vimos no curso até aqui. Nele já temos um Dockerfile para uma instância do banco de dados MySQL e as principais dependências definidas no requirements.txt (como o gunicorn e mysqlclient).
+
+Como vamos focar no deploy, não vamos nos aprofundar no código da aplicação.
+
+### Dockerfile para o Django
+
+A primeira alteração que vamos fazer é criar um Dockerfile para a nossa aplicação Django. Esse Dockerfile será responsável por criar uma imagem Docker que será usada como base para o deploy no Railway.
+
+Como já temos um Dockerfile para o Mysql, vamos renomeá-lo para criar um novo arquivo chamado Dockerfile na raiz do projeto e adicionar o conteúdo a seguir:
+
+```bash
+mv Dockerfile Dockerfile.mysql
+touch Dockerfile
+touch .dockerignore
+```
+
+Arquivo Dockerfile
+
+```bash
+FROM python:3.10-slim
+
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN apt update \
+    && apt install -y python3-dev netcat-openbsd default-libmysqlclient-dev build-essential pkg-config \
+    && pip install --upgrade pip
+
+COPY ./requirements.txt ./
+
+RUN pip install -r requirements.txt
+
+COPY ./ ./
+
+CMD ["gunicorn", "cinetrybe.wsgi", "--bind", "0.0.0.0:8000"]
+```
+
+Arquivo .dockerignore
+
+```bash
+.env
+
+.git
+.cache
+
+.venv
+
+*.egg-info
+
+setup.cfg
+__pycache__
+.coverage
+.pytest_cache
+```
+
+De olho na dica 👀: Existem diversas formas de configurar um ambiente com Docker para aplicação Django. Se você encontrar outras formas de fazê-la, não se preocupe! O importante é que você entenda os conceitos e consiga aplicá-los no seu projeto.
+
+Alguns comentários importantes sobre essa configuração sugerida para o Dockerfile:
+
+* Estamos usando a imagem python:3.10-slim como base, então a versão do Python será a 3.10. Imagens slim não são tão enxutas quanto as alpine, mas com ela podemos garantir que o mysqlclient será instalado sem muita complexidade;
+* Estamos definindo a variável de ambiente PYTHONUNBUFFERED como 1. Essa variável é importante para garantir que as saídas do Python sejam exibidas imediatamente no terminal, sem que seja feito cache das saídas. Assim poderemos ver mensagens de debug no terminal em tempo real;
+* Estamos instalando as dependências do sistema operacional necessárias para instalar o mysqlclient (a dependência do Django para conexão com o banco MySQL), mas elas podem variar de acordo com a imagem base que você escolher;
+* Estamos utilizando o parâmetro --bind do gunicorn para definir o endereço e porta que o servidor irá escutar. Nesse caso, estamos definindo que o gunicorn irá escutar na porta 8000 de todas as interfaces de rede (0.0.0.0). Essa configuração será essencial para nossa aplicação ser acessível no Railway.
+* Com o .dockerignore, estamos evitando que alguns arquivos desnecessários sejam enviados ao container. Isso é importante para evitar que o container fique muito pesado e também para não expor dados sensíveis. Você pode adicionar outros arquivos que não deseja enviar ao container, como arquivos de testes, arquivos de configuração do editor de texto, etc.
+
+Para testar se a nossa imagem está funcionando, vamos construí-la e executá-la localmente:
+
+```bash
+docker build -t cinetrybe .
+docker run -it --rm -p 8000:8000 cinetrybe
+```
+
+### Conectando ao banco de dados
+
+Nesse momento, se você tentar acessar a aplicação no navegador, você verá um erro de conexão com o banco de dados. Isso acontece porque o gunicorn está tentando se conectar ao banco de dados, mas não consegue encontrar o servidor.
+
+Para isso, precisaremos de um docker-compose para subir o banco de dados e a aplicação Django ao mesmo tempo. Vamos criar um arquivo docker-compose.yml na raiz do projeto:
+
+```bash
+touch docker-compose.yml
+```
+
+Arquivo docker-compose.yml
+
+```bash
+version: "3.8"
+
+services:
+  db_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d/:ro
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db_service
+```
+
+Além disso, precisamos fazer um pequeno ajuste no settings.py da nossa aplicação Django para que a variável DATABASES faça a conexão com o serviço mysql_db definido no docker-compose.yml:
+
+Arquivo settings.py
+
+```bash
+
+DATABASES = {
+    'default': {
+       'ENGINE': 'django.db.backends.mysql',
+       'NAME': 'cinetrybe_database',
+       'USER': 'root',
+       'PASSWORD': 'password',
+-       'HOST': '127.0.0.1',
++       'HOST': 'db_service',
+       'PORT': '3306',
+    }
+}
+```
+
+Maravilha! 🎉 Agora podemos rodar nossa aplicação com o docker-compose:
+
+```bash
+docker-compose up --build
+```
+
+Ao acessar http://localhost:8000/ temos… um novo erro! 😅
+
+Esse erro ocorre porque, através do docker-compose.yml, subimos uma nova instância do banco de dados, e por isso precisamos criar as tabelas novamente com python3 manage.py migrate dentro dela. Além disso, vamos precisar do comando collectstatic e eventualmente do makemigrations. Vejamos como fazer isso!
+
+### Configurando o entrypoint
+
+Como precisamos rodar alguns comandos antes de iniciar o gunicorn, como o das migrations, vamos criar um entrypoint para nossa aplicação. O entrypoint é um script que será executado no CMD do Dockerfile.
+
+Para isso, vamos criar um arquivo entrypoint.sh na raiz do projeto:
+
+```bash
+touch entrypoint.sh
+```
+
+Arquivo entrypoint.sh
+
+```bash
+#!/bin/sh
+
+# Essa parte é importante para garantir que o banco de dados já esteja no ar
+# antes de rodar as migrações
+
+while ! nc -z db_service 3306 ; do
+    echo "> > > Esperando o banco de dados MySQL ficar disponível..."
+    sleep 3
+done
+
+echo "> > > Banco de dados MySQL disponível!"
+
+
+python3 manage.py collectstatic --noinput
+python3 manage.py makemigrations
+python3 manage.py migrate
+gunicorn cinetrybe.wsgi --bind 0.0.0.0:8000
+```
+
+E vamos ajustar o Dockerfile para que ele execute esse script:
+
+Arquivo Dockerfile
+
+```bash
+...
+
+-CMD ["gunicorn", "cinetrybe.wsgi", "--bind", "0.0.0.0:8000"]
++CMD ["sh", "entrypoint.sh"]
+```
+
+Agora, vamos construir e rodar nossa aplicação novamente:
+
+```bash
+docker-compose up --build
+```
+
+Agora sim! 🎉 Se acessar a rota /admin, verá a tela de login
+
+Ah, e como ainda não existe um super-user cadastrado no banco de dados local, podemos criar um com o comando:
+
+```bash
+docker-compose run --rm web python manage.py createsuperuser
+```
+
+Temos nossa aplicação rodando com o gunicorn e o banco de dados MySQL em serviços no Docker localmente. Mas ainda temos alguns ajustes para fazer antes de fazer o deploy no Railway. 👀
+</details>
+</br>
+
+# Configuração do MySQL no Railway
+
+### Por que usar o MySQL do Railway?
+
+Até o momento, estamos utilizando o MySQL rodando em um container Docker para armazenar os dados da nossa aplicação. Mas para o deploy no Railway, utilizaremos de um banco de dados MySQL da própria plataforma separado da aplicação Back-end. Importante mencionar que, para o deploy, não há uma necessidade de usar o Railway para hospedagem do banco: você pode usar outros provedores como o AWS RDS, Google Cloud SQL ou outras opções gratuitas.
+
+Isso é uma boa prática, pois permite que o banco de dados seja escalado separadamente da aplicação, e também que o banco de dados seja mais facilmente acessado por outros serviços em nuvem. Além disso, pelo painel do Railway podemos acompanhar métricas de uso do banco de dados, e também ajustar variáveis de ambiente sem alterar o código da aplicação.
+
+Além disso, como o Railway não suporta o docker-compose, precisamos separar os 2 serviços diretamente na plataforma:
+
+O banco de dados MySQL;
+O servidor da aplicação Django.
+
+<details>
+<summary><strong> Criando o banco de dados MySQL no Railway </strong></summary>
+
+Antes de criar o banco de dados, precisamos criar um novo projeto no Railway. Para isso, acesse o site do Railway com a sua conta e crie um novo projeto vazio. O fluxo é: + New Project ➡️ Empty Project.
+
+Com o projeto criado, vamos criar o banco de dados MySQL. Para isso, escolha a opção de adicionar um novo serviço de banco de dados MySQL. O fluxo é: Add a Service (ou New) ➡️ Database ➡️ Add MySQL. Após alguns segundos o serviço será criado e estará disponível para uso! 🚀
+
+### Preparando a aplicação para múltiplos bancos de dados
+
+Agora que temos o banco de dados MySQL criado, precisamos configurar a nossa aplicação Django para se conectar a ele. Para isso, vamos utilizar as variáveis de ambiente que o Railway disponibiliza para nós. Para encontrar as variáveis de ambiente, clique no serviço MySQL criado, acesse a aba Connect e confira a seção Available Variables. Os valores estarão escondidos por padrão, mas você pode clicar no ícone de olho 👁️ para visualizá-los.
+
+Como não queremos que essas variáveis de conexão fiquem “fixas” no nosso repositório, e sim fazer a leitura através do ambiente, vamos ajustar nosso código para carregar as variáveis de ambiente a partir de um arquivo .env na raiz do nosso projeto.
+
+Faremos de forma que o programa busque as variáveis de ambiente de onde quer que esteja rodando e as use - seja localmente ou em produção.
+
+Crie o arquivo e adicione as variáveis de ambiente que já estávamos usando localmente:
+
+```bash
+touch .env
+```
+
+Arquivo .env
+
+```bash
+MYSQLDATABASE=cinetrybe_database
+MYSQLHOST=db_service
+MYSQLPASSWORD=password
+MYSQLPORT=3306
+MYSQLUSER=root
+```
+
+Atenção ⚠️:
+
+Os valores das variáveis de ambiente de produção do Railway são diferentes das que estávamos usando localmente. No arquivo .env não devemos usar os valores das variáveis do ambiente de produção do Railway.
+Apesar disso, lembre de usar os mesmos nomes de variáveis do Railway para facilitar a configuração.
+Agora precisamos ajustar o docker-compose para que ele carregue as variáveis de ambiente do arquivo .env e as disponibilize para a aplicação Django. Para isso, vamos adicionar a seguinte configuração ao nosso serviço django:
+
+Arquivo docker-compose.yml
+
+```bash
+version: "3.8"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d/:ro
+  web:
++   env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+```
+
+Vamos precisar também ajustar script entrypoint.sh para que ele valide a criação do banco de dados através das variáveis de ambiente. Para isso, vamos fazer o seguinte ajuste no script:
+
+Arquivo entrypoint.sh
+
+```bash
+...
+
+- while ! nc -z db_service 3306 ; do
++ while ! nc -z $MYSQLHOST $MYSQLPORT ; do
+    echo "> > > Esperando o banco de dados MySQL ficar disponível..."
+    sleep 3
+done
+
+...
+```
+
+E por fim, precisamos ajustar o settings.py da nossa aplicação Django para que a variável DATABASES faça a conexão com o serviço mysql_db definido no docker-compose.yml:
+
+Arquivo settings.py
+
+```bash
++import os
+
+...
+
+DATABASES = {
+    'default': {
+       'ENGINE': 'django.db.backends.mysql',
+-      'NAME': 'cinetrybe_database',
++      'NAME': os.environ.get('MYSQLDATABASE'),
+-      'USER': 'root',
++      'USER': os.environ.get('MYSQLUSER'),
+-      'PASSWORD': 'password',
++      'PASSWORD': os.environ.get('MYSQLPASSWORD'),
+-      'HOST': 'db_service',
++      'HOST': os.environ.get('MYSQLHOST'),
+-      'PORT': '3306',
++      'PORT': os.environ.get('MYSQLPORT'),
+    }
+}
+
+...
+```
+
+Agora podemos rodar nossa aplicação com o docker-compose, e verificar que está funcionando normalmente.
+
+Ufa! 🥵 Foi muita coisa, mas vai valer a pena para nosso próximo passo: subir servidor Django no Railway! 🚀
+
+</details>
+</br>
+
+# Deploy do Servidor Django
+
+<details>
+<summary><strong> Configurando o serviço Django no Railway </strong></summary>
+
+Utilizando o projeto já criado anteriormente, vamos criar um serviço para o servidor Django. Para isso, escolha a opção de adicionar um novo serviço de banco de dados MySQL. O fluxo é: + New ➡️ Empty Service.
+
+Ao clicar no serviço criado, você pode acessar a aba Settings e alterar o nome do serviço (Service Name) para algo que faça mais sentido. Aqui vamos trocar para cinetrybe-dj.
+
+Além disso, já vamos deixar criado um domínio para o nosso serviço. Para isso, na aba Settings, clique em Generate Domain. Esse domínio será usado para acessar a nossa aplicação Django na nuvem.
+
+### Variáveis de ambiente
+
+No Railway, podemos definir variáveis de ambiente para cada serviço. Para isso, basta acessar a aba Variables do serviço e adicionar as variáveis de ambiente que precisamos. As principais variáveis de ambiente que precisamos definir são aquelas do serviço do MySQL, que já estão disponíveis para nós. Isso significa adicionar as variáveis de ambiente do serviço do MySQL via referência (Add Reference) no serviço da sua aplicação Django.
+
+De olho na dica 👀: Na seção de implantação em Railway do curso você pode relembrar como fazer isso.
+
+Ah, e lembra que o gunicorn está escutando na porta 8000? Precisamos informar isso para o Railway definindo a variável PORT com o valor 8000.
+
+### Subindo o código para o Railway
+
+Agora que já temos o serviço Django configurado, podemos subir o código para o Railway. Há 2 formas principais para fazer isso:
+
+GitHub: Usando a interface do Railway, podemos autorizar que um repositório do Github seja “escutado”;
+CLI: Usando a CLI (Command Line Interface) do Railway, podemos subir o código local diretamente do nosso terminal.
+Para esse conteúdo vamos utilizar a CLI do Railway, mas você pode vincular o projeto com o GitHub posteriormente.
+
+O passo-a-passo é o seguinte:
+
+Caso não tenha instalado a CLI do Railway ainda, siga o tutorial oficial para seu Sistema Operacional;
+Caso não tenha feito login na CLI do Railway, execute o comando railway login e siga as instruções;
+Execute o comando railway link para vincular o código local com o projeto criado no Railway (no nosso exemplo foi nomeado como Cinetrybe);
+Execute o comando railway service para informar que o código local está atrelado ao serviço do Django que criamos (no nosso exemplo foi nomeado como cinetrybe-dj);
+Execute o comando railway up -d para subir o código para o Railway. 🚀
+Aguarde o deploy ser feito - acompanhe o progresso pela aba Deployments do serviço onde está seu projeto Django. Agora você pode acessar o domínio que criamos para o serviço Django e ver a aplicação rodando na nuvem mais um erro para ser corrigido! 😅
+
+Isso acontece porque o framework Django insere algumas validações de segurança, mas não se preocupe: vamos resolver isso agora! 💚
+</details>
+</br>
+
+# Configurações do Django para deploy
+
+<details>
+<summary><strong> Configurando o serviço Django no Railway </strong></summary>
+
+### Configuração ALLOWED_HOSTS
+
+O primeiro erro que vemos ao acessar a URL da aplicação é:
+
+```bash
+Invalid HTTP_HOST header: 'cinetrybe-dj-production.up.railway.app'. You may need to add 'cinetrybe-dj-production.up.railway.app' to ALLOWED_HOSTS.
+```
+
+Esse ALLOWED_HOSTS mencionado é uma variável global localizada no nosso settings.py, que armazena uma lista de strings. Uma configuração possível para essa variável é:
+
+Arquivo settings.py
+
+```bash
+# ...
+
+-ALLOWED_HOSTS = []
++ALLOWED_HOSTS = [
+    os.environ.get("RAILWAY_STATIC_URL", ""),
+    ".localhost",
+    "127.0.0.1",
+    "[::1]",
+]
+
+# ...
+```
+
+Atenção ⚠️: A variável RAILWAY_STATIC_URL é uma variável de ambiente que o Railway disponibiliza e representa o domínio público da nossa aplicação, então não precisamos fazer mais nada.
+
+### Configuração CSRF_TRUSTED_ORIGINS
+
+A próxima configuração necessária é a CSRF_TRUSTED_ORIGINS. Essa configuração existe para que o Django consiga validar o token CSRF (Cross-site Request Forgery) em requisições potencialmente inseguras (POST, PUT, PATCH e DELETE).
+
+Para isso, vamos definir essa variável como:
+
+Arquivo settings.py
+
+```bash
+# ...
+
++CSRF_TRUSTED_ORIGINS = ["https://" + os.environ.get("RAILWAY_STATIC_URL", "")]
+
+# ...
+```
+
+### Configuração DEBUG
+
+A variável DEBUG é uma variável global do Django que define se a aplicação está em modo de desenvolvimento ou produção. Quando definimos essa variável como True, o Django exibe informações de debug no navegador, como tracebacks e warnings.
+
+Para o deploy, é importante que essa variável esteja definida como False. Para isso, vamos definir essa variável como:
+
+Arquivo settings.py
+
+```bash
+# ...
+
+-DEBUG = True
++DEBUG = bool(int(os.environ.get('DEBUG', 0)))
+
+# ...
+```
+
+⚠️ Para termos as funcionalidades de Debug localmente, basta definir a variável DEBUG como 1 no arquivo .env:
+
+Arquivo .env
+
+```bash
+# ...
+DEBUG=1
+# ...
+```
+
+### Configuração SECRET_KEY
+
+Por fim, vamos configurar a variável SECRET_KEY. Essa variável é responsável por garantir a segurança da aplicação Django. Ela é usada para assinar os tokens CSRF, cookies de sessão e outras funcionalidades de segurança do Django.
+
+Para o deploy, é importante que essa variável seja definida como uma string aleatória e segura. Para isso, vamos definir essa variável como:
+
+Arquivo settings.py
+
+```bash
+# ...
+
+-SECRET_KEY = "django-insecure-********************************************"
++SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'change-me')
+
+# ...
+```
+
+⚠️ Assim, precisaremos criar uma nova chave (você pode gerar com esse site: https://randomkeygen.com/, e escolher a opção “504-bit WPA Key”) e definir a variável DJANGO_SECRET_KEY no arquivo .env e também no Railway:
+
+## Django no ar! 🚀
+
+Com todas as configurações feitas, podemos fazer o deploy da nossa aplicação Django no Railway com sucesso! 🚀
+
+```bash
+railway up -d
+```
+
+</details>
+</br>
+
+<details>
+<summary><strong> Comandos com o ambiente do servidor Railway </strong></summary>
+
+Vale lembrar que, caso você precise rodar algum comando na sua aplicação utilizando as variáveis de ambiente configuradas no Railway (ex: conexão com o banco de dados na nuvem), você pode usar a interface CLI para isso:
+
+```bash
+railway run <comando>
+```
+
+Por exemplo, para criar um super-usuário no banco de dados da aplicação Django que está no Railway, podemos usar o comando:
+
+```bash
+railway run python manage.py createsuperuser
+```
+
+Atenção ⚠️: O comando railway run ainda executará no seu terminal local, mas com as variáveis de ambiente do Railway. Isso significa que, para o exemplo anterior, você precisa preparar a aplicação Django localmente instalando dependências.
+</details>
+</br>
+
+# Manipulação de imagens com Django na nuvem
+
+Antes de finalizarmos o conteúdo do dia, é essencial tratarmos do assunto de manipulação de imagens com nosso servidor em nuvem.
+
+Até o momento vimos apenas formas de armazenar imagens (como a foto de um usuário cadastrado no banco).
+
+O problema é que, agora, a cada re-deploy da aplicação, as imagens são perdidas, pois o servidor é recriado do zero.
+
+Para resolver esse problema, vamos utilizar o serviço de armazenamento de arquivos em nuvem do Cloudinary. Ele não exige cartão de crédito para começar a usar, tem um plano gratuito bom para quem está começando, e possui uma boa integração com o Django para manipulação de imagens! 🤩
+
+<details>
+<summary><strong> Criação da conta no Cloudinary </strong></summary>
+
+
+Para começar, vamos criar uma conta no Cloudinary. Para isso, acesse o site, clique em Sign up e crie sua conta como preferir: com e-mail, Google ou GiHub.
+
+No passo seguinte, você verá uma tela como a seguinte. Escolha a opção Developer.
+
+Em seguida, você já terá acesso ao seu painel de controle do Cloudinary, onde poderá ver suas credenciais de acesso e exemplos de uso da plataforma em diversas linguagens de programação. Acesse a aba Dashboard como indicado na imagem a seguir, e poderá acompanhar também o uso da sua conta.
+</details>
+</br>
+
+<details>
+<summary><strong> Uso do Cloudinary no Django </strong></summary>
+
+Agora que já temos nossa conta no Cloudinary, vamos ajustar nossa aplicação Django para que ela possa se comunicar com o serviço.
+
+Para isso, vamos adicionar a biblioteca ao arquivo requirements.txt:
+
+```bash
+# ...
+cloudinary==1.33.0
+# ...
+```
+
+Em seguida, vamos inserir as credenciais de acesso ao Cloudinary no arquivo .env:
+
+Arquivo .env
+
+```bash
+# ...
+CLOUDINARY_CLOUD_NAME=**********
+CLOUDINARY_API_KEY=**********
+CLOUDINARY_API_SECRET=**********
+# ...
+```
+
+Insira as credenciais no Railway também!
+
+Atenção ⚠️: Substitua os asteriscos pelas suas credenciais de acesso ao Cloudinary presentes no Dashboard da plataforma.
+
+Agora, vamos editar nosso arquivo settings.py para que ele possa se comunicar com o Cloudinary:
+
+Arquivo settings.py
+
+```bash
+# ...
+
++import cloudinary
++import cloudinary.uploader
++import cloudinary.api
+
+# ...
+
++cloudinary.config(
++    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
++    api_key=os.environ.get('CLOUDINARY_API_KEY'),
++    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
++)
+
+# ...
+```
+
+</details>
+</br>
+
+<details>
+<summary><strong> Alteração da Model e Template </strong></summary>
+
+Maravilha! Isso é tudo que precisamos para começar a usar o Cloudinary no nosso projeto Django. Agora, vamos alterar nossa Model MovieTheater para que ela possa receber uma foto da capa do cinema:
+
+Arquivo movies/models.py
+
+```bash
+from django.db import models
++from cloudinary.models import CloudinaryField
+
+# ...
+
+class MovieTheater(models.Model):
+    name = models.CharField(max_length=100)
++   cover_image = CloudinaryField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+# ...
+```
+
+Repare que não vamos usar o models.ImageField, mas sim o CloudinaryField. Isso porque o CloudinaryField já faz o upload da imagem para o Cloudinary e retorna uma URL para a imagem. Moleza né?! 🤩
+
+Com isso, vamos alterar nosso template movies/templates/index.html para que ele possa exibir a imagem:
+
+Arquivo movies/templates/index.html
+
+```bash
+...
+
+        <div class="bg-white rounded-lg shadow-md">
++            {% if movie_theater.cover_image %}
++            <img src="{{ movie_theater.cover_image.url }}" alt="Imagem de capa do cinema"
++                class="w-full h-32 object-cover rounded-t-lg">
++            {% else %}
+            <img src="{% static 'img/cinema_default.jpeg' %}" alt="Imagem padrão de cinema"
+                class="w-full h-32 object-cover rounded-t-lg">
++            {% endif %}
+            <div class="p-4">
+                <h3 class="text-lg font-semibold mb-2 text-center">{{movie_theater.name}}</h3>
+            </div>
+        </div>
+
+...
+```
+
+Atenção ⚠️: Repare que estamos não usamos o static usando o movie_theater.cover_image.url para acessar a URL da imagem. Isso porque o Cloudinary já faz o upload da imagem para a nuvem e retorna a URL da imagem para o Django.
+</details>
+</br>
+
+<details>
+<summary><strong> Cloudinary com formulários do Django </strong></summary>
+
+Se for necessário utilizar o Cloudinary com formulários do Django, você precisará de alguns ajustes extras. Para saber quais são os ajustes, basta seguir a documentação da ferramenta. 😉
+
+### Aproveite!
+
+Faça o Deploy da sua aplicação no Railway e experimente usar o Django Admin para criar Cinemas diferentes: com e sem imagem. Você verá que o Cloudinary já faz o upload da imagem para a nuvem e retorna a URL da imagem para o Django! 🤩
+
+Com o ajuste que fizemos no template, você verá que o Django já exibe a imagem de capa do cinema cadastrado (e usa a imagem padrão caso não tenha sido cadastrada uma imagem para o cinema).
+</details>
+</br>
+
 <details>
 <summary><strong>  </strong></summary>
 
-```bash
-```
 
 ```bash
 ```
@@ -1448,6 +2116,8 @@ Execute o comando de testes e veja agora 32 testes sendo aprovados! 🎉
 ```bash
 ```
 
+```bash
+```
 
 </details>
 </br>
@@ -1455,8 +2125,6 @@ Execute o comando de testes e veja agora 32 testes sendo aprovados! 🎉
 <details>
 <summary><strong>  </strong></summary>
 
-```bash
-```
 
 ```bash
 ```
@@ -1464,6 +2132,8 @@ Execute o comando de testes e veja agora 32 testes sendo aprovados! 🎉
 ```bash
 ```
 
+```bash
+```
 
 </details>
 </br>
@@ -1471,21 +2141,6 @@ Execute o comando de testes e veja agora 32 testes sendo aprovados! 🎉
 <details>
 <summary><strong>  </strong></summary>
 
-```bash
-```
-
-```bash
-```
-
-```bash
-```
-
-
-</details>
-</br>
-
-<details>
-<summary><strong>  </strong></summary>
 
 ```bash
 ```
@@ -1495,7 +2150,6 @@ Execute o comando de testes e veja agora 32 testes sendo aprovados! 🎉
 
 ```bash
 ```
-
 
 </details>
 </br>
