@@ -91,3 +91,4 @@ JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9
 ** (firefox:590482): WARNING **: 12:57:13.162: atk-bridge: get_device_events_reply: unknown signature
 console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
 1723046236846	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+1723048483812	Marionette	INFO	Stopped listening on port 37835
