@@ -89,7 +89,7 @@ Neste exemplo, vamos utilizar a versão 4.6.0, que pode ser instalada com o segu
 pip3 install selenium==4.6.0
 ```
 
-Como dito anteriormente, para utilizar a ferramenta é necessário também instalar o driver do browser que utilizaremos. Nesta parte da documentação você encontra os links para os drivers dos principais browsers. Para este exemplo utilizaremos o Mozilla Firefox (especificamente na versão 106.0), que já vem instalado na maioria das distribuições Linux, mas a utilização de outros navegadores, como o Chrome, é bem similar.
+Como dito anteriormente, para utilizar a ferramenta é necessário também instalar o driver do browser que utilizaremos. Nesta parte da documentação (https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location/) você encontra os links para os drivers dos principais browsers. Para este exemplo utilizaremos o Mozilla Firefox (especificamente na versão 106.0), que já vem instalado na maioria das distribuições Linux, mas a utilização de outros navegadores, como o Chrome, é bem similar.
 
 Após escolher o browser que será utilizado, clique em Downloads, e depois do redirecionamento para a página do github com as opções do geckodriver, clique na versão compatível com o sistema operacional instalado em seu computador.
 
