@@ -1,0 +1,358 @@
+1723043819900	geckodriver	INFO	Listening on 127.0.0.1:41727
+1723043820313	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "39615" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileFGKFNP"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723043821969	Marionette	INFO	Marionette enabled
+1723043822448	Marionette	INFO	Listening on port 34865
+WebDriver BiDi listening on ws://127.0.0.1:39615
+Read port: 34865
+1723043822698	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:39615/devtools/browser/08ec2bd0-0833-42f3-9929-56f89a8d5fe9
+JavaScript error: https://media.ethicalads.io/media/client/v1.4.0/ethicalads.min.js, line 1: Error: No ad placements found.
+JavaScript error: resource:///actors/FormValidationChild.sys.mjs, line 182: TypeError: this._element is null
+[Parent 580246, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:580246): WARNING **: 12:17:28.599: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723043853173	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+JavaScript error: resource://devtools/server/connectors/js-process-actor/ContentProcessWatcherRegistry.sys.mjs, line 394: NotFoundError: No such JSProcessActor 'DevToolsProcess'
+JavaScript error: resource://devtools/server/connectors/js-process-actor/ContentProcessWatcherRegistry.sys.mjs, line 394: NotFoundError: No such JSProcessActor 'DevToolsProcess'
+JavaScript error: resource://devtools/server/connectors/js-process-actor/ContentProcessWatcherRegistry.sys.mjs, line 394: NotFoundError: No such JSProcessActor 'DevToolsProcess'
+JavaScript error: resource://devtools/server/connectors/js-process-actor/ContentProcessWatcherRegistry.sys.mjs, line 394: NotFoundError: No such JSProcessActor 'DevToolsProcess'
+JavaScript error: resource://devtools/server/connectors/js-process-actor/ContentProcessWatcherRegistry.sys.mjs, line 394: NotFoundError: No such JSProcessActor 'DevToolsProcess'
+JavaScript error: resource://devtools/server/connectors/js-process-actor/ContentProcessWatcherRegistry.sys.mjs, line 394: NotFoundError: No such JSProcessActor 'DevToolsProcess'
+JavaScript error: , line 0: NotFoundError: No such JSProcessActor 'DevToolsProcess'
+JavaScript error: , line 0: NotFoundError: No such JSProcessActor 'DevToolsProcess'
+JavaScript error: , line 0: NotFoundError: No such JSProcessActor 'DevToolsProcess'
+JavaScript warning: https://www.googletagmanager.com/gtag/js?id=G-TF35YF9CVH, line 190: Script terminated by timeout at:
+z@https://www.googletagmanager.com/gtag/js?id=G-TF35YF9CVH:190:158
+Sz@https://www.googletagmanager.com/gtag/js?id=G-TF35YF9CVH:564:134
+Tz/<@https://www.googletagmanager.com/gtag/js?id=G-TF35YF9CVH:564:111
+
+1723044497326	Marionette	INFO	Stopped listening on port 34865
+1723044753093	geckodriver	INFO	Listening on 127.0.0.1:54701
+1723044753546	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "57257" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileH6Ep22"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723044754662	Marionette	INFO	Marionette enabled
+1723044754970	Marionette	INFO	Listening on port 36977
+WebDriver BiDi listening on ws://127.0.0.1:57257
+Read port: 36977
+1723044755205	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:57257/devtools/browser/7c73f25b-3670-499c-9dfc-d8fa7d64dc95
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+[Parent 584343, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:584343): WARNING **: 12:33:00.605: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723044785962	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+1723044788917	Marionette	INFO	Stopped listening on port 36977
+1723045853179	geckodriver	INFO	Listening on 127.0.0.1:54529
+1723045853603	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "47107" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilef4PFuK"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723045854700	Marionette	INFO	Marionette enabled
+1723045855075	Marionette	INFO	Listening on port 42227
+Read port: 42227
+WebDriver BiDi listening on ws://127.0.0.1:47107
+1723045855252	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:47107/devtools/browser/75a3df98-a287-445e-bd50-219ce8e49a39
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+[Parent 588664, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:588664): WARNING **: 12:51:21.111: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723045884878	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+1723045979461	Marionette	INFO	Stopped listening on port 42227
+1723046205003	geckodriver	INFO	Listening on 127.0.0.1:44007
+1723046205431	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "37115" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileD6kgwr"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723046206835	Marionette	INFO	Marionette enabled
+1723046207198	Marionette	INFO	Listening on port 37835
+Read port: 37835
+WebDriver BiDi listening on ws://127.0.0.1:37115
+1723046207354	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:37115/devtools/browser/a751a464-4d67-4f32-bf9d-a7671e657027
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://books.toscrape.com/static/oscar/js/jquery/jquery-1.9.1.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+[Parent 590482, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:590482): WARNING **: 12:57:13.162: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723046236846	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+1723048483812	Marionette	INFO	Stopped listening on port 37835
+1723054081887	geckodriver	INFO	Listening on 127.0.0.1:60333
+1723054082354	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "56741" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile682bhT"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723054083400	Marionette	INFO	Marionette enabled
+1723054083719	Marionette	INFO	Listening on port 42717
+WebDriver BiDi listening on ws://127.0.0.1:56741
+Read port: 42717
+1723054083924	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:56741/devtools/browser/141e6e6d-a124-4a71-a52a-2a6ba4bb070a
+[Parent 623915, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:623915): WARNING **: 15:08:29.326: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723054114725	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+1723054120012	Marionette	INFO	Stopped listening on port 42717
+1723054367452	geckodriver	INFO	Listening on 127.0.0.1:53385
+1723054367843	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "56257" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilekHfFWq"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723054368952	Marionette	INFO	Marionette enabled
+1723054369271	Marionette	INFO	Listening on port 36517
+WebDriver BiDi listening on ws://127.0.0.1:56257
+Read port: 36517
+1723054369504	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:56257/devtools/browser/2f23e114-3fca-4bf2-9d53-856f66253159
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 3225 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+libva info: VA-API version 1.20.0
+libva info: Trying to open /snap/firefox/4650/gnome-platform/usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: Found init function __vaDriverInit_1_20
+libva info: va_openDriver() returns 0
+JavaScript error: https://a.ad.gt/api/v1/u/matches/95?url=https%3A%2F%2Fwww.wikimetal.com.br%2Firon-maiden-scorpions-kiss-veja-melhores-albuns-1982%2F&ref=, line 174: TypeError: d.body is null
+JavaScript error: https://cdn.hadronid.net/hadron.js?partner_id=95&sync=1&url=https%3A%2F%2Fwww.wikimetal.com.br%2Firon-maiden-scorpions-kiss-veja-melhores-albuns-1982%2F, line 1: TypeError: w.body is null
+[Parent 625774, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:625774): WARNING **: 15:13:14.908: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723054399226	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+JavaScript warning: https://www.wikimetal.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js, line 1: Script terminated by timeout at:
+c@https://www.wikimetal.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9349
+
+1723054425037	Marionette	INFO	Stopped listening on port 36517
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+1723054467491	geckodriver	INFO	Listening on 127.0.0.1:42155
+1723054467975	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "51295" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile8kX5fT"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723054469047	Marionette	INFO	Marionette enabled
+1723054469414	Marionette	INFO	Listening on port 36565
+WebDriver BiDi listening on ws://127.0.0.1:51295
+Read port: 36565
+1723054469647	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:51295/devtools/browser/4317f34b-8bab-475a-a6dc-d68acc1c8080
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 1463 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript error: https://a.ad.gt/api/v1/u/matches/95?url=https%3A%2F%2Fwww.wikimetal.com.br%2Firon-maiden-scorpions-kiss-veja-melhores-albuns-1982%2F&ref=, line 174: TypeError: d.body is null
+JavaScript error: https://cdn.hadronid.net/hadron.js?partner_id=95&sync=1&url=https%3A%2F%2Fwww.wikimetal.com.br%2Firon-maiden-scorpions-kiss-veja-melhores-albuns-1982%2F, line 1: TypeError: w.body is null
+[Parent 626923, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:626923): WARNING **: 15:14:55.053: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723054501549	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+1723054528191	geckodriver	INFO	Listening on 127.0.0.1:39525
+1723054528642	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "58557" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilekH4AdM"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723054529768	Marionette	INFO	Marionette enabled
+1723054530050	Marionette	INFO	Listening on port 40863
+WebDriver BiDi listening on ws://127.0.0.1:58557
+Read port: 40863
+1723054530286	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:58557/devtools/browser/90ad7e68-b85e-46b4-a472-8224ed3d95e2
+JavaScript warning: https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c, line 374: Script terminated by timeout at:
+Q@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:374:16
+ba.Gm@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:664:24
+c@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:679:675
+zm@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:381:1
+ym.prototype.flush@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:383:278
+ym.prototype.push@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:381:395
+rm@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:378:743
+fH/<@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:680:178
+ba.Rk/<@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:623:126
+ba.Rk/c/<@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:622:420
+c@https://www.wikimetal.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9405
+
+1723054536701	Marionette	INFO	Stopped listening on port 36565
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 4478 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 7197 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+libva info: VA-API version 1.20.0
+libva info: Trying to open /snap/firefox/4650/gnome-platform/usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: Found init function __vaDriverInit_1_20
+libva info: va_openDriver() returns 0
+JavaScript error: https://a.ad.gt/api/v1/u/matches/95?url=https%3A%2F%2Fwww.wikimetal.com.br%2Firon-maiden-scorpions-kiss-veja-melhores-albuns-1982%2F&ref=, line 174: TypeError: d.body is null
+JavaScript error: https://cdn.hadronid.net/hadron.js?partner_id=95&sync=1&url=https%3A%2F%2Fwww.wikimetal.com.br%2Firon-maiden-scorpions-kiss-veja-melhores-albuns-1982%2F, line 1: TypeError: w.body is null
+[Parent 627921, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:627921): WARNING **: 15:15:55.667: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723054562162	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+1723054573694	geckodriver	INFO	Listening on 127.0.0.1:45109
+1723054574115	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "55903" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileVnWYcs"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723054575212	Marionette	INFO	Marionette enabled
+1723054575557	Marionette	INFO	Listening on port 39795
+WebDriver BiDi listening on ws://127.0.0.1:55903
+Read port: 39795
+1723054575781	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:55903/devtools/browser/897bb64b-f421-4875-899f-bd5be876340d
+JavaScript warning: https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c, line 197: Script terminated by timeout at:
+Ab@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:197:128
+ol@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:368:504
+rm@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:378:720
+fH/<@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:680:178
+ba.Rk/<@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:623:126
+ba.Rk/c/<@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:622:420
+c@https://www.wikimetal.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9405
+
+1723054580778	Marionette	INFO	Stopped listening on port 40863
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 2228 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 895 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+libva info: VA-API version 1.20.0
+libva info: Trying to open /snap/firefox/4650/gnome-platform/usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: Found init function __vaDriverInit_1_20
+libva info: va_openDriver() returns 0
+JavaScript error: https://a.ad.gt/api/v1/u/matches/95?url=https%3A%2F%2Fwww.wikimetal.com.br%2Firon-maiden-scorpions-kiss-veja-melhores-albuns-1982%2F&ref=, line 174: TypeError: d.body is null
+JavaScript error: https://cdn.hadronid.net/hadron.js?partner_id=95&sync=1&url=https%3A%2F%2Fwww.wikimetal.com.br%2Firon-maiden-scorpions-kiss-veja-melhores-albuns-1982%2F, line 1: TypeError: w.body is null
+JavaScript warning: https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c, line 196: Script terminated by timeout at:
+z@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:196:158
+ym.prototype.flush@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:383:210
+ym.prototype.push@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:381:395
+rm@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:378:743
+fH/<@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:680:178
+ba.Rk/<@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:623:126
+ba.Rk/c/<@https://www.googletagmanager.com/gtag/js?id=G-224PJ37N93&l=dataLayer&cx=c:622:420
+c@https://www.wikimetal.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9405
+
+1723054593244	Marionette	INFO	Stopped listening on port 39795
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+1723055261819	geckodriver	INFO	Listening on 127.0.0.1:59341
+1723055262251	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "59199" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileZm0UHo"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723055263332	Marionette	INFO	Marionette enabled
+1723055263682	Marionette	INFO	Listening on port 44639
+WebDriver BiDi listening on ws://127.0.0.1:59199
+Read port: 44639
+1723055263920	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:59199/devtools/browser/e34ed7f7-1a2a-47aa-b34b-f2b0905a2d6e
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 4570 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+[Parent 631862, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:631862): WARNING **: 15:28:09.321: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723055294250	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+JavaScript warning: https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js, line 1: Script terminated by timeout at:
+c@https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9349
+
+1723055417367	Marionette	INFO	Stopped listening on port 44639
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+1723055550565	geckodriver	INFO	Listening on 127.0.0.1:43235
+1723055550987	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "42393" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilexPuq3U"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723055552050	Marionette	INFO	Marionette enabled
+1723055552374	Marionette	INFO	Listening on port 33343
+Read port: 33343
+WebDriver BiDi listening on ws://127.0.0.1:42393
+1723055552475	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:42393/devtools/browser/e04ff815-2097-4ca1-b4c9-32439391af13
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 6814 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+[Parent 633502, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:633502): WARNING **: 15:32:58.000: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723055582951	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+JavaScript warning: https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js, line 1: Script terminated by timeout at:
+c@https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9349
+
+1723055593384	Marionette	INFO	Stopped listening on port 33343
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+1723055990152	geckodriver	INFO	Listening on 127.0.0.1:44429
+1723055990587	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "54323" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileZn2fBK"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723055991648	Marionette	INFO	Marionette enabled
+1723055991962	Marionette	INFO	Listening on port 35499
+WebDriver BiDi listening on ws://127.0.0.1:54323
+Read port: 35499
+1723055992172	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:54323/devtools/browser/f770734d-07b7-4176-a0a5-fdfed576b4f2
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 6953 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+[Parent 635687, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:635687): WARNING **: 15:40:17.580: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723056025190	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+1723056146878	geckodriver	INFO	Listening on 127.0.0.1:38561
+1723056147290	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "45687" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilet24ob4"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723056148691	Marionette	INFO	Marionette enabled
+1723056148999	Marionette	INFO	Listening on port 41007
+WebDriver BiDi listening on ws://127.0.0.1:45687
+Read port: 41007
+1723056149244	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:45687/devtools/browser/2ffbaaa1-8803-4b31-b5b1-c7da4854aa87
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 4294 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+JavaScript warning: https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js, line 1: Script terminated by timeout at:
+c@https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9349
+
+1723056158722	Marionette	INFO	Stopped listening on port 41007
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript warning: https://www.googletagmanager.com/gtag/js?id=G-5C1GT5EZ77, line 354: Script terminated by timeout at:
+ol@https://www.googletagmanager.com/gtag/js?id=G-5C1GT5EZ77:354:550
+rm@https://www.googletagmanager.com/gtag/js?id=G-5C1GT5EZ77:364:720
+fH/<@https://www.googletagmanager.com/gtag/js?id=G-5C1GT5EZ77:666:178
+ba.Rk/<@https://www.googletagmanager.com/gtag/js?id=G-5C1GT5EZ77:609:126
+ba.Rk/c/<@https://www.googletagmanager.com/gtag/js?id=G-5C1GT5EZ77:608:420
+c@https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9405
+
+1723056159346	Marionette	INFO	Stopped listening on port 35499
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+1723056292689	geckodriver	INFO	Listening on 127.0.0.1:37645
+1723056292834	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/sna ... te" "--remote-debugging-port" "50571" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileDLHczz"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1723056293915	Marionette	INFO	Marionette enabled
+1723056294259	Marionette	INFO	Listening on port 39523
+WebDriver BiDi listening on ws://127.0.0.1:50571
+Read port: 39523
+1723056294492	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+DevTools listening on ws://127.0.0.1:50571/devtools/browser/351932a8-d0ac-4a4e-b2f3-b838ccceab1f
+JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-1WSwsTvQuWvBiQ-SJiz2S1yc.js line 2 > eval line 4645 > eval line 1 > eval line 1 > eval, line 1: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+[Parent 637890, Main Thread] WARNING: atk-bridge: get_device_events_reply: unknown signature: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:187
+
+** (firefox:637890): WARNING **: 15:45:19.879: atk-bridge: get_device_events_reply: unknown signature
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
+1723056324130	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+JavaScript warning: https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js, line 1: Script terminated by timeout at:
+c@https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9349
+
+1723056360006	Marionette	INFO	Stopped listening on port 39523
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
