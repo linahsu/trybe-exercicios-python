@@ -351,3 +351,8 @@ JavaScript warning: https://pagead2.googlesyndication.com/bg/pHi-zHzKU2GlUHd7HF-
 ** (firefox:637890): WARNING **: 15:45:19.879: atk-bridge: get_device_events_reply: unknown signature
 console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
 1723056324130	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+JavaScript warning: https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js, line 1: Script terminated by timeout at:
+c@https://diolinux.com.br/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js:1:9349
+
+1723056360006	Marionette	INFO	Stopped listening on port 39523
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
