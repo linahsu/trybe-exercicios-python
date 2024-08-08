@@ -767,35 +767,3 @@ print(scrape_all("https://www.tecmundo.com.br/novidades?page=11030"))
 As duas ferramentas que você viu hoje te deram mais possibilidades de fazer raspagem de dados e podem ampliar seu ferramental para ir muito além na sua carreira, explorando outras funcionalidades delas, buscando como integrá-las ou até mesmo procurando outras ferramentas que tragam ainda mais simplicidade e praticidade ao que você precisa fazer.
 </details>
 </br>
-
-<details>
-<summary><strong>  </strong></summary>
-
-
-```bash
-```
-
-```bash
-```
-
-```bash
-```
-
-</details>
-</br>
-
-<details>
-<summary><strong>  </strong></summary>
-
-
-```bash
-```
-
-```bash
-```
-
-```bash
-```
-
-</details>
-</br>
